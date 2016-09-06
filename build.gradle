@@ -1,0 +1,68 @@
+group 'com.tomeokin'
+version '1.0.0'
+
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.4.0.RELEASE'
+        // run help->dependencyUpdates to see new available version
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'spring-boot'
+apply plugin: 'idea'
+apply plugin: 'com.github.ben-manes.versions'
+//apply plugin: 'war'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+def versionMajor = 1
+def versionMinor = 0
+def versionPatch = 0
+
+static def releaseTime() {
+    return new Date().time
+}
+
+jar {
+    // ${baseName}-${appendix}-${version}-${classifier}.${extension}
+    baseName = 'lspush-server'
+    appendix = "${releaseTime()}"
+    version =  "${versionMajor}.${versionMinor}.${versionPatch}"
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.springframework.boot:spring-boot-starter-web"
+    compile ("org.springframework.boot:spring-boot-starter-data-jpa") {
+        exclude group: 'org.hibernate', module:'hibernate-entitymanager'
+    }
+    compile "org.hibernate:hibernate-core:5.2.2.Final"
+    compile "org.springframework.boot:spring-boot-starter-mail"
+    compile "mysql:mysql-connector-java:5.1.39"
+    compile "com.googlecode.libphonenumber:libphonenumber:7.6.0"
+    compile "commons-validator:commons-validator:1.5.1"
+    compile "com.google.guava:guava:19.0"
+    compile "org.apache.commons:commons-lang3:3.4"
+    compile "joda-time:joda-time:2.9.4"
+
+    // thymeleaf 3
+    compile "org.springframework.boot:spring-boot-starter-thymeleaf"
+    compile "org.thymeleaf:thymeleaf-spring4:3.0.1.RELEASE"
+    compile "org.thymeleaf:thymeleaf:3.0.1.RELEASE"
+    compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.0.1"
+
+    testCompile "junit:junit:4.12"
+    testCompile "org.springframework.boot:spring-boot-starter-test"
+    testCompile "org.apache.commons:commons-crypto:1.0.0"
+}

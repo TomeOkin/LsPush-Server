@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <logger name="app.logback" level="INFO"/>
+    <springProfile name="dev, staging">
+        <logger name="app.controller" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+        <logger name="app.service" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+        <logger name="org.springframework.web" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+        <logger name="root" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+        <logger name="org.hibernate" level="WARN" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+    </springProfile>
+    <springProfile name="production">
+        <logger name="app.controller" level="WARN" additivity="false">
+            <appender-ref ref="FILE"/>
+        </logger>
+        <logger name="app.service" level="WARN" additivity="false">
+            <appender-ref ref="FILE"/>
+        </logger>
+        <logger name="org.springframework.web" level="WARN" additivity="false">
+            <appender-ref ref="FILE"/>
+        </logger>
+        <logger name="root" level="WARN" additivity="false">
+            <appender-ref ref="FILE"/>
+        </logger>
+        <logger name="org.hibernate" level="ERROR" additivity="false">
+            <appender-ref ref="FILE"/>
+        </logger>
+    </springProfile>
+</configuration>
