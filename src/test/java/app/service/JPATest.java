@@ -104,6 +104,6 @@ public class JPATest {
         String json = objectMapper.writeValueAsString(link);
         Link clone = objectMapper.readValue(json, Link.class);
         logger.info(clone.toString());
-        // you can see that although I use JsonCreator to control the way to create, but some code was not execute.
+        Assert.assertNotNull(clone.getUrlUnique());
     }
 }

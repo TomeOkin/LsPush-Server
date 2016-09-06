@@ -35,9 +35,9 @@ import java.util.List;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = App.class)
 public class CollectionServiceTest {
+    private static final Logger logger = LoggerFactory.getLogger(CollectionServiceTest.class);
     @Autowired CollectionService collectionService;
     @Autowired UserRepository userRepository;
-    private static final Logger logger = LoggerFactory.getLogger(CollectionServiceTest.class);
 
     @Test
     public void collectionTest() {
@@ -49,15 +49,11 @@ public class CollectionServiceTest {
         user.setValidate(User.EMAIL_VALID);
         userRepository.save(user);
 
-        Link link = new Link();
-        link.setUrl("https://www.google.com");
-        link.setTitle("Google");
+        Link link = new Link("https://www.google.com", "Google");
         Collection collection = new Collection(user, link, "google search", "");
         collectionService.postCollection(user.getUid(), collection);
 
-        link = new Link();
-        link.setUrl("https://www.baidu.com");
-        link.setTitle("Baidu");
+        link = new Link("https://www.baidu.com", "Baidu");
         collection = new Collection(user, link, "baidu search", "");
         collectionService.postCollection(user.getUid(), collection);
 

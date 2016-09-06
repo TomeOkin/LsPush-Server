@@ -22,6 +22,13 @@ public class PinData {
     @NotNull private Collection collection;
     private Date pinDate;
 
+    public PinData() {}
+
+    public PinData(Collection collection, Date pinDate) {
+        this.collection = collection;
+        this.pinDate = pinDate;
+    }
+
     public Collection getCollection() {
         return collection;
     }
@@ -36,5 +43,12 @@ public class PinData {
 
     public void setPinDate(Date pinDate) {
         this.pinDate = pinDate;
+    }
+
+    @Override public String toString() {
+        return "PinData{" +
+            "collection=" + collection +
+            ", pinDate=" + pinDate +
+            '}';
     }
 }

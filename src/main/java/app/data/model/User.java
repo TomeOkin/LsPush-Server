@@ -16,11 +16,10 @@
 package app.data.model;
 
 import app.data.model.internal.Pin;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -37,18 +36,15 @@ public class User implements Serializable {
     private String email;
     private String phone;
     private String region; // 地区码, use for phone
-    // it will not be send to client, but it can read from client.
-    @JsonIgnoreProperties(allowSetters = true) private String password;
+    private String password; // it will not be send to client, but it can read from client.
     private int validate; // 00：未验证，01：手机号已验证，02：email已验证，03：手机号和 email都已验证
     private String image; // user image
 
     // it only use for database operation
-    @JsonIgnoreProperties
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Collection> collections = new ArrayList<>();
+    @JsonIgnore @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Collection> collections;
 
-    @JsonIgnoreProperties
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Pin pin;
 
     public String getUid() {
@@ -91,7 +87,7 @@ public class User implements Serializable {
         this.region = region;
     }
 
-    public String getPassword() {
+    @JsonIgnore public String getPassword() {
         return password;
     }
 

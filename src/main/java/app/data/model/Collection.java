@@ -15,7 +15,7 @@
  */
 package app.data.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -26,16 +26,16 @@ public class Collection implements Serializable {
     private static final long serialVersionUID = 6379948649053059650L;
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private long id;
-    @ManyToOne @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "collection_user_id_constraint")) private User user;
-    @ManyToOne @JoinColumn(name = "link_id", foreignKey = @ForeignKey(name = "collection_link_id_constraint")) private Link link;
+    @ManyToOne @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "collection_user_id_constraint"))
+    private User user;
+    @ManyToOne @JoinColumn(name = "link_id", foreignKey = @ForeignKey(name = "collection_link_id_constraint"))
+    private Link link;
 
     private String description;
     private String image;
 
-    @JsonIgnoreProperties(allowGetters = true) @Column(name = "create_date") @Temporal(TemporalType.TIMESTAMP)
-    private Date createDate;
-    @JsonIgnoreProperties(allowGetters = true) @Column(name = "update_date") @Temporal(TemporalType.TIMESTAMP)
-    private Date updateDate;
+    @Column(name = "create_date") @Temporal(TemporalType.TIMESTAMP) private Date createDate;
+    @Column(name = "update_date") @Temporal(TemporalType.TIMESTAMP) private Date updateDate;
 
     public Collection() {
     }
@@ -91,7 +91,7 @@ public class Collection implements Serializable {
         return createDate;
     }
 
-    public void setCreateDate(Date createDate) {
+    @JsonIgnore public void setCreateDate(Date createDate) {
         this.createDate = createDate;
     }
 
@@ -99,7 +99,7 @@ public class Collection implements Serializable {
         return updateDate;
     }
 
-    public void setUpdateDate(Date updateDate) {
+    @JsonIgnore public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
     }
 

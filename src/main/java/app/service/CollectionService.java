@@ -20,6 +20,7 @@ import app.data.local.LinkRepository;
 import app.data.model.Collection;
 import app.data.model.Link;
 import app.data.model.User;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -75,8 +76,10 @@ public class CollectionService {
         user.setUid(uid);
         collection.setUser(user);
 
-        Link old = collection.getLink();
-        Link link = new Link(old.getUrl(), old.getTitle()); // update link, add unique code
+        Link link = collection.getLink();
+        if (StringUtils.isEmpty(link.getUrlUnique())) {
+            link = new Link(link.getUrl(), link.getTitle()); // update link, add unique code
+        }
         Link one = linkRepository.findFirstByUrl(link.getUrl());
         if (one == null) {
             linkRepository.save(link);

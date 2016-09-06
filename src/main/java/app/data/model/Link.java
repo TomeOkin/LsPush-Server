@@ -16,7 +16,7 @@
 package app.data.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.hash.Hashing;
 
@@ -32,21 +32,19 @@ public class Link implements Serializable {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private long id;
     private String url;
-    @JsonIgnoreProperties @Column(name = "url_unique") private String urlUnique;
+    @Column(name = "url_unique") private String urlUnique;
     private String title;
 
-    @JsonIgnoreProperties
+    @JsonIgnore
     @OneToMany(mappedBy = "link", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Collection> collections = new ArrayList<>();
 
-    public Link() {
-    }
+    public Link() {}
 
     @JsonCreator
     public Link(@JsonProperty(value = "url") String url, @JsonProperty(value = "title") String title) {
         this.url = url;
         this.title = title;
-        // FIXME: 2016/9/5 the follow was not execute when json parsing
         // 碰撞率大概为 1/(0.5% * 0.5%)，一般一张数据库表容纳大概 50 万条记录就达到极限，这个比率已经足够了
         this.urlUnique = Hashing.murmur3_128().hashString(url, StandardCharsets.UTF_8).toString() + Hashing.sipHash24()
             .hashString(url, StandardCharsets.UTF_8);
@@ -68,6 +66,7 @@ public class Link implements Serializable {
         this.url = url;
     }
 
+    @JsonIgnore
     public String getUrlUnique() {
         return urlUnique;
     }
