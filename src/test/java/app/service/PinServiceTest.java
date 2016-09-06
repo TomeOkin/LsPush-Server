@@ -80,7 +80,5 @@ public class PinServiceTest {
         for (PinData pin : datas) {
             logger.info(pin.toString());
         }
-
-
     }
 }
