@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.data.local;
+package app.service;
 
-import app.data.model.User;
-import app.data.model.internal.Pin;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Service;
 
-public interface PinRepository extends CrudRepository<Pin, Long>, JpaSpecificationExecutor<Pin> {
-    Pin findByUser(User user);
+@Service
+public class FetchService {
+    public FetchService() {
 
-    @Override <S extends Pin> S save(S entity);
+    }
 }

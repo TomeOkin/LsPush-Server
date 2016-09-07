@@ -67,7 +67,6 @@ public class JPATest {
         collectionRepository.save(collection);
         Assert.assertEquals(1, collectionRepository.count());
 
-        collection = new Collection(user, link, "google search", "");
         Page<Collection> collectionPage = collectionRepository.findByUser(user, new PageRequest(0, 1));
         for (Collection col : collectionPage) {
             logger.info(col.toString());
@@ -79,8 +78,13 @@ public class JPATest {
             logger.info(col.toString());
             Assert.assertNull(col.getUser());
         }
-
-        collectionRepository.removeByUserAndLink(collection.getUser(), collection.getLink());
+        Assert.assertNotNull(collections);
+        Assert.assertEquals(1, collections.size());
+        collection = collections.get(0);
+        Assert.assertNotNull(collection);
+        Assert.assertNotNull(collection.getId());
+        collectionRepository.delete(collection.getId());
+        //collectionRepository.removeByUserAndLink(collection.getUser(), collection.getLink());
 
         //collectionRepository.delete(1L);
         //Assert.assertEquals(0, collectionRepository.count());

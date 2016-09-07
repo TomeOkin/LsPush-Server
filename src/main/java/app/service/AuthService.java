@@ -65,8 +65,11 @@ public class AuthService {
                 .putLong(from.getRefreshTime());
     }
 
+    /**
+     * for take full advantage of cache, use findOne instead of exists
+     */
     public boolean isExistUser(String uid) {
-        return userRepository.exists(uid);
+        return userRepository.findOne(uid) != null;
     }
 
     public int register(CryptoToken cryptoToken, AccessResponse accessResponse) {

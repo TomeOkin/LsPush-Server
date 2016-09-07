@@ -24,9 +24,17 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 
 public interface CollectionRepository extends CrudRepository<Collection, Long>, JpaSpecificationExecutor<Collection> {
+
     Page<Collection> findByUser(User user, Pageable pageable);
 
-    void removeByUserAndLink(User user, Link link);
-
     Collection findOneByUserAndLink(User user, Link link);
+
+    // just for test now, don't need cache
+    //void removeByUserAndLink(User user, Link link);
+
+    @Override void delete(Long id);
+
+    @Override Collection findOne(Long id);
+
+    @Override <S extends Collection> S save(S entity);
 }

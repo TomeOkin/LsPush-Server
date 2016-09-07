@@ -25,4 +25,8 @@ public interface UserRepository extends CrudRepository<User, String> {
     User findFirstByEmail(String email);
 
     List<User> findByPhone(String phone);
+
+    @Override <S extends User> S save(S entity);
+
+    @Override User findOne(String uid);
 }

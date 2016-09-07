@@ -13,15 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.data.local;
+package app.data.model;
 
-import app.data.model.User;
-import app.data.model.internal.Pin;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.repository.CrudRepository;
+public class WebPageInfo {
+    public String url;
+    public String title;
+    public String description;
 
-public interface PinRepository extends CrudRepository<Pin, Long>, JpaSpecificationExecutor<Pin> {
-    Pin findByUser(User user);
-
-    @Override <S extends Pin> S save(S entity);
+    @Override public String toString() {
+        return "WebPageInfo{" +
+            "url='" + url + '\'' +
+            ", title='" + title + '\'' +
+            ", description='" + description + '\'' +
+            '}';
+    }
 }

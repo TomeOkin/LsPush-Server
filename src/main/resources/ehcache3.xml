@@ -1,0 +1,37 @@
+<config xmlns='http://www.ehcache.org/v3'
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:jsr107="http://www.ehcache.org/v3/jsr107"
+        xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.0.xsd
+							http://www.ehcache.org/v3/jsr107 http://www.ehcache.org/schema/ehcache-107-ext-3.0.xsd">
+    <cache alias="users_by_uid">
+        <expiry>
+            <ttl unit="seconds">600</ttl>
+        </expiry>
+        <heap unit="entries">80</heap>
+        <jsr107:mbeans enable-statistics="true"/>
+    </cache>
+
+    <cache alias="pin_by_user_uid">
+        <expiry>
+            <ttl unit="seconds">600</ttl>
+        </expiry>
+        <heap unit="entries">80</heap>
+        <jsr107:mbeans enable-statistics="true"/>
+    </cache>
+
+    <cache alias="link_by_url">
+        <expiry>
+            <ttl unit="seconds">600</ttl>
+        </expiry>
+        <heap unit="entries">80</heap>
+        <jsr107:mbeans enable-statistics="true"/>
+    </cache>
+
+    <cache alias="collections_by_id">
+        <expiry>
+            <ttl unit="seconds">600</ttl>
+        </expiry>
+        <heap unit="entries">100</heap>
+        <jsr107:mbeans enable-statistics="true"/>
+    </cache>
+</config>

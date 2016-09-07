@@ -22,14 +22,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.annotation.PostConstruct;
 
 @SpringBootApplication
+@EnableScheduling
 public class App {
     private static final Logger logger = LoggerFactory.getLogger(App.class);
 
     @Autowired LsPushProperties lsPushProperties;
+    @Autowired RedisConnectionFactory factory;
 
     @PostConstruct
     public void initCrypt() {
@@ -42,5 +46,10 @@ public class App {
 
     public static void main(String[] args) throws Exception {
         SpringApplication.run(App.class, args);
+    }
+
+    // 目前处于测试阶段，启动服务器时先清空数据库
+    @PostConstruct public void flushDb() {
+        factory.getConnection().flushDb();
     }
 }

@@ -59,6 +59,7 @@ public class CollectionService {
         colPage.forEach(
             col -> {
                 Collection collection = new Collection(null, col.getLink(), col.getDescription(), col.getImage());
+                collection.setId(col.getId());
                 collection.setCreateDate(col.getCreateDate());
                 collection.setUpdateDate(col.getUpdateDate());
                 collections.add(collection);
@@ -67,7 +68,7 @@ public class CollectionService {
     }
 
     public boolean isExistCollection(long id) {
-        return collectionRepository.exists(id);
+        return collectionRepository.findOne(id) != null;
     }
 
     @Transactional
