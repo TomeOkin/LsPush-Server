@@ -68,13 +68,4 @@ public class CaptchaServiceTest {
         int result = captchaService.checkCaptcha(token);
         Assert.assertEquals(BaseResponse.COMMON_SUCCESS, result);
     }
-
-    @Test
-    public void checkClientToken() {
-        CryptoToken token = new CryptoToken();
-        token.key = "HFm2t3Sb34DSIklhTwLmDrEGlTqeR8DkEIbsnvfC6QcFXz8tX0ltFwyfqgx/+zaMZSEkm8lzbYpbOioPfRiafg==";
-        token.value = "kX/mqpydJc0Kw/OkTaHYdqr8ru+ccbPfoZA6nsnAXfj0B6DUwU44ZEJ9diI08ZpRQKnYvMTqWgni4Vq7muf06yS2xpC5d5AUJmA85MGaJnQ=";
-        int result = captchaService.checkCaptcha(token);
-        Assert.assertEquals(BaseResponse.COMMON_SUCCESS, result);
-    }
 }

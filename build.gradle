@@ -62,8 +62,8 @@ dependencies {
     compile "org.thymeleaf:thymeleaf:3.0.1.RELEASE"
     compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.0.1"
 
-    compile "org.springframework.boot:spring-boot-starter-data-redis"
-    compile "redis.clients:jedis:2.9.0"
+//    compile "org.springframework.boot:spring-boot-starter-data-redis"
+//    compile "redis.clients:jedis:2.9.0"
 
     compile "org.jsoup:jsoup:1.9.2"
 
