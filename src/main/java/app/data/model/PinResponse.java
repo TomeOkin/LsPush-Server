@@ -21,6 +21,7 @@ public class PinResponse extends BaseResponse {
     private List<PinData> pinDatas;
 
     public PinResponse(List<PinData> pinDatas) {
+        super();
         this.pinDatas = pinDatas;
     }
 
