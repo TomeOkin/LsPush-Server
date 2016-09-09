@@ -17,13 +17,18 @@ package app.service.internal;
 
 import app.data.model.WebPageInfo;
 import app.data.parse.WebPageUtil;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@RunWith(JUnit4.class)
 public class WebPageMain {
     private static final Logger logger = LoggerFactory.getLogger(WebPageMain.class);
 
-    public static void main(String[] args) throws Exception {
+    @Test
+    public void test() throws Exception {
         WebPageInfo info = WebPageUtil.parse("http://www.jianshu.com/p/2a9fcf3c11e4#");
         logger.info(info.toString());
         info = WebPageUtil.parse("http://www.cnblogs.com/jasondan/p/3497757.html");

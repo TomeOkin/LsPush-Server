@@ -50,7 +50,7 @@ dependencies {
     compile "org.hibernate:hibernate-core:5.2.2.Final"
     compile "org.springframework.boot:spring-boot-starter-mail"
     compile "mysql:mysql-connector-java:5.1.39"
-    compile "com.googlecode.libphonenumber:libphonenumber:7.6.0"
+    compile "com.googlecode.libphonenumber:libphonenumber:7.6.1"
     compile "commons-validator:commons-validator:1.5.1"
     compile "com.google.guava:guava:19.0"
     compile "org.apache.commons:commons-lang3:3.4"
