@@ -47,7 +47,8 @@ public class AuthServiceTest {
 
     @Test
     public void checkExpireToken() {
-        MockCaptchaService captchaService = new MockCaptchaService(userInfoValidator, lsPushProperties, mailSender, templateEngine, objectMapper);
+        MockCaptchaService captchaService =
+            new MockCaptchaService(userInfoValidator, lsPushProperties, mailSender, templateEngine, objectMapper);
         AuthService authService =
             new AuthService(objectMapper, captchaService, userInfoValidator, userRepository);
 
@@ -73,6 +74,10 @@ public class AuthServiceTest {
             logger.warn("encrypt register data failure", e);
         }
         Assert.assertNotNull(registerToken);
+
+        // pre check captcha
+        result = captchaService.checkCaptcha(registerToken);
+        Assert.assertEquals(BaseResponse.COMMON_SUCCESS, result);
 
         // 服务器端注册用户
         AccessResponse accessResponse = new AccessResponse();

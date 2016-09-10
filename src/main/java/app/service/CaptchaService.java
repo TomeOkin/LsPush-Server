@@ -16,6 +16,7 @@
 package app.service;
 
 import app.config.LsPushProperties;
+import app.config.ResultCode;
 import app.data.crypt.Crypto;
 import app.data.model.BaseResponse;
 import app.data.model.CaptchaRequest;
@@ -165,13 +166,17 @@ public class CaptchaService {
 
         Captcha found = authCodeMap.getIfPresent(request);
         if (found != null) {
-            found.accessTimes++;
-            if (found.accessTimes <= 3 && found.authCode.equals(authCode)) {
-                if (successWithInvalidate) {
-                    // when auth success, it will discards the key
-                    authCodeMap.invalidate(request);
+            if (found.accessTimes < 3) {
+                if (found.authCode.equals(authCode)) {
+                    if (successWithInvalidate) {
+                        // when auth success, it will discards the key
+                        authCodeMap.invalidate(request);
+                    }
+                    return BaseResponse.COMMON_SUCCESS;
+                } else {
+                    found.accessTimes++;
+                    return ResultCode.MATCHING_FAILURE;
                 }
-                return BaseResponse.COMMON_SUCCESS;
             }
 
             // when auth failure beyond 3 times, you can only auth success until the key is invalidate.
