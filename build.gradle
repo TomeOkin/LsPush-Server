@@ -7,7 +7,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.4.0.RELEASE'
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE'
         // run help->dependencyUpdates to see new available version
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0'
     }
@@ -50,7 +50,7 @@ dependencies {
     compile "org.hibernate:hibernate-core:5.2.2.Final"
     compile "org.springframework.boot:spring-boot-starter-mail"
     compile "mysql:mysql-connector-java:5.1.39"
-    compile "com.googlecode.libphonenumber:libphonenumber:7.6.1"
+    compile "com.googlecode.libphonenumber:libphonenumber:7.7.0"
     compile "commons-validator:commons-validator:1.5.1"
     compile "com.google.guava:guava:19.0"
     compile "org.apache.commons:commons-lang3:3.4"
@@ -60,7 +60,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-thymeleaf"
     compile "org.thymeleaf:thymeleaf-spring4:3.0.1.RELEASE"
     compile "org.thymeleaf:thymeleaf:3.0.1.RELEASE"
-    compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.0.1"
+    compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.0.3"
 
 //    compile "org.springframework.boot:spring-boot-starter-data-redis"
 //    compile "redis.clients:jedis:2.9.0"
