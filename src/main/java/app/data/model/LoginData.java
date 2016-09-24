@@ -16,33 +16,15 @@
 package app.data.model;
 
 public class LoginData {
-    private String userId;
-    private String email;
-    private String phone;
+    private String uid;
     private String password;
 
-    public String getUserId() {
-        return userId;
+    public String getUid() {
+        return uid;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public String getPassword() {

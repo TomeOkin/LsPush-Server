@@ -119,6 +119,18 @@ public class User implements Serializable {
         return pin;
     }
 
+    public User cloneSelfPublic() {
+        User user = new User();
+        user.setUid(uid);
+        user.setNickname(nickname);
+        user.setEmail(email);
+        user.setPhone(phone);
+        user.setRegion(region);
+        user.setImage(image);
+        user.setValidate(validate);
+        return user;
+    }
+
     @Override public String toString() {
         return "User{" +
             "uid='" + uid + '\'' +

@@ -98,7 +98,7 @@ public class AuthServiceTest {
 
         // 客户端通过 refresh data 构造 refresh token 以刷新服务器端生成的 refresh token
         RefreshData refreshData = new RefreshData();
-        refreshData.setUserId(accessResponse.getUserId());
+        refreshData.setUserId(accessResponse.getUser().getUid());
         refreshData.setRefreshToken(accessResponse.getRefreshToken());
         CryptoToken refreshToken = null;
         try {
@@ -119,7 +119,7 @@ public class AuthServiceTest {
 
         // 登录测试
         LoginData loginData = new LoginData();
-        loginData.setUserId(accessResponse.getUserId());
+        loginData.setUid(accessResponse.getUser().getUid());
         loginData.setPassword(registerData.getPassword());
         CryptoToken loginToken = null;
         try {
@@ -134,6 +134,6 @@ public class AuthServiceTest {
         Assert.assertEquals(BaseResponse.COMMON_SUCCESS, result);
 
         // 还原 user 表
-        userRepository.delete(loginData.getUserId());
+        userRepository.delete(loginData.getUid());
     }
 }

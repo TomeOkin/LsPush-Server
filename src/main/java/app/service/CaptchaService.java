@@ -18,6 +18,7 @@ package app.service;
 import app.config.LsPushProperties;
 import app.config.ResultCode;
 import app.data.crypt.Crypto;
+import app.data.local.UserRepository;
 import app.data.model.BaseResponse;
 import app.data.model.CaptchaRequest;
 import app.data.model.CryptoToken;
@@ -69,10 +70,12 @@ public class CaptchaService {
     private final Cache<CaptchaRequest, Captcha> authCodeMap;
     private BloomFilter<String> authCodeFilter;
     private final Funnel<String> stringFunnel;
+    private final UserRepository userRepository;
 
     @Autowired
     public CaptchaService(UserInfoValidator userInfoValidator, LsPushProperties lsPushProperties,
-        JavaMailSender mailSender, TemplateEngine templateEngine, ObjectMapper objectMapper) {
+        JavaMailSender mailSender, TemplateEngine templateEngine, ObjectMapper objectMapper,
+        UserRepository userRepository) {
         this.userInfoValidator = userInfoValidator;
         this.serverName = lsPushProperties.getServerName();
         this.serverUrl = lsPushProperties.getServerUrl();
@@ -80,6 +83,7 @@ public class CaptchaService {
         this.mailSender = mailSender;
         this.templateEngine = templateEngine;
         this.objectMapper = objectMapper;
+        this.userRepository = userRepository;
         authCodeMap = CacheBuilder.newBuilder()
             .initialCapacity(100)
             .maximumSize(500)
@@ -91,14 +95,15 @@ public class CaptchaService {
     }
 
     public int sendAuthCode(final CaptchaRequest request) {
-        // 先检查最近验证码请求数据
+        // 合法检查
         String sendObject = request.getSendObject();
         if (StringUtils.isEmpty(sendObject)) {
             return INVALID_CAPTCHA;
         }
+
         boolean isValid;
         if (sendObject.contains("@")) {
-            isValid = userInfoValidator.isEmailValid(sendObject);
+            isValid = userInfoValidator.isEmailValid(sendObject) && userRepository.findFirstByEmail(sendObject) == null;
         } else {
             isValid = userInfoValidator.isPhoneValid(sendObject, request.getRegion());
         }

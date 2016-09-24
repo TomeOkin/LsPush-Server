@@ -23,7 +23,6 @@ import app.data.validator.UserInfoValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.hash.Funnel;
 import com.google.common.hash.Hashing;
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +31,6 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 import static app.config.ResultCode.*;
 
@@ -72,6 +70,9 @@ public class AuthService {
         return userRepository.findOne(uid) != null;
     }
 
+    /**
+     * 注册需要使用邮箱或者手机号，将会返回口令、口令有效时间、用户基本信息
+     */
     public int register(CryptoToken cryptoToken, AccessResponse accessResponse) {
         RegisterData registerData;
         try {
@@ -125,9 +126,13 @@ public class AuthService {
         // 在服务器端已经将数据记录到数据库后，不关心结果地清除验证码记录
         captchaService.checkCaptcha(captchaRequest, registerData.getAuthCode());
 
+        accessResponse.setUser(user.cloneSelfPublic());
         return refreshAccessResponse(registerData.getUserId(), accessResponse);
     }
 
+    /**
+     * 登录只允许使用 uid 方式进行登录，将会返回口令、口令有效时间、用户基本信息
+     */
     public int login(CryptoToken cryptoToken, AccessResponse accessResponse) {
         LoginData loginData;
         try {
@@ -138,42 +143,21 @@ public class AuthService {
             return INVALID_TOKEN;
         }
 
-        boolean check = userInfoValidator.checkPasswordStrengthBaseline(loginData.getPassword());
+        boolean check = userInfoValidator.checkUserId(loginData.getUid())
+            && userInfoValidator.checkPasswordStrengthBaseline(loginData.getPassword());
         if (!check) {
             return ILLEGAL_ACCOUNT_INFO;
         }
 
-        List<User> users;
-        User user = null;
+        User user;
         try {
-            if (!StringUtils.isEmpty(loginData.getUserId())) {
-                user = userRepository.findOne(loginData.getUserId());
-                if (user != null) {
-                    check = loginData.getUserId().equals(user.getUid()) && loginData.getPassword()
-                        .equals(user.getPassword());
-                }
-            } else if (!StringUtils.isEmpty(loginData.getEmail())) {
-                user = userRepository.findFirstByEmail(loginData.getEmail());
-                if (user != null) {
-                    check = loginData.getEmail().equals(user.getEmail()) && loginData.getPassword()
-                        .equals(user.getPassword());
-                }
-            } else if (!StringUtils.isEmpty(loginData.getPhone())) {
-                users = userRepository.findByPhone(loginData.getPhone());
-                if (users != null) {
-                    if (users.size() == 1) {
-                        user = users.get(0);
-                        check = loginData.getPhone().equals(user.getPhone()) && loginData.getPassword()
-                            .equals(user.getPassword());
-                    } else {
-                        return MORE_THAN_ONE_ACCOUNT;
-                    }
-                }
-            }
-
-            if (user == null || !check) {
+            user = userRepository.findOne(loginData.getUid());
+            check = user != null && loginData.getUid().equals(user.getUid()) && loginData.getPassword()
+                .equals(user.getPassword());
+            if (!check) {
                 return ACCOUNT_NOT_MATCH;
             }
+            accessResponse.setUser(user.cloneSelfPublic());
         } catch (Exception e) {
             logger.warn("query user failure", e);
             return QUERY_USER_FAILURE;
@@ -234,7 +218,6 @@ public class AuthService {
             return ENCRYPT_TOKEN_FAILURE;
         }
 
-        accessResponse.setUserId(refreshSession.getUserId());
         accessResponse.setExpireTime(expireTime);
         accessResponse.setExpireToken(expireToken);
         return BaseResponse.COMMON_SUCCESS;
@@ -278,10 +261,9 @@ public class AuthService {
             return ENCRYPT_TOKEN_FAILURE;
         }
 
-        accessResponse.setUserId(userId);
         accessResponse.setExpireTime(expireTime);
-        accessResponse.setRefreshTime(refreshTime);
         accessResponse.setExpireToken(expireToken);
+        accessResponse.setRefreshTime(refreshTime);
         accessResponse.setRefreshToken(refreshToken);
         return BaseResponse.COMMON_SUCCESS;
     }

@@ -20,8 +20,8 @@ public class AccessResponse extends BaseResponse {
     private long expireTime;
     // 超过该刷新时间后，refreshToken 也需要重新获取一个新的，更新 refreshToken 需要以旧换新。
     private long refreshTime;
-    // 提供 userId 供后续使用
-    private String userId;
+    // 提供 user 供后续使用
+    private User user;
 
     private CryptoToken expireToken;
     private CryptoToken refreshToken;
@@ -50,12 +50,12 @@ public class AccessResponse extends BaseResponse {
         this.refreshTime = refreshTime;
     }
 
-    public String getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public CryptoToken getExpireToken() {
