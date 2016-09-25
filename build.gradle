@@ -62,13 +62,16 @@ dependencies {
     compile "org.thymeleaf:thymeleaf:3.0.1.RELEASE"
     compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.0.3"
 
+    compile "org.jsoup:jsoup:1.9.2"
+
 //    compile "org.springframework.boot:spring-boot-starter-data-redis"
 //    compile "redis.clients:jedis:2.9.0"
 
-    compile "org.jsoup:jsoup:1.9.2"
+    compile "org.springframework.boot:spring-boot-starter-data-mongodb"
 
-    //    // cache
-//    compile "org.springframework.boot:spring-boot-starter-cache"
+    // cache
+    compile "org.springframework.boot:spring-boot-starter-cache"
+
 //    // JSR-107 API (uncomment to try the JCache support)
 //    compile "javax.cache:cache-api:1.0.0"
 //    // Using cache manager: org.springframework.cache.jcache.JCacheCacheManager

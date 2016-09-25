@@ -51,6 +51,8 @@ public class ResultCode {
     public static final int COLLECTION_NOT_EXIST = 22;
     public static final int PARSE_PIN_DATA_FAILURE = 23;
 
+    public static final int ARGUMENT_ERROR = 24;
+
     /**
      * It not contain all the status, only those can send to user.
      */
@@ -82,5 +84,7 @@ public class ResultCode {
 
         errorCode.put(PIN_DATA_TOO_MUCH, "Pin Data Too Much");
         errorCode.put(COLLECTION_NOT_EXIST, "Collection Not Exist");
+
+        errorCode.put(ARGUMENT_ERROR, "Argument Error");
     }
 }

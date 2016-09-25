@@ -53,18 +53,7 @@ public class CollectionService {
         User user = new User();
         user.setUid(uid);
         Page<Collection> colPage = collectionRepository.findByUser(user, new PageRequest(page, size, sort));
-        List<Collection> collections = new ArrayList<>(colPage.getContent().size());
-        // set user field null, because what we find is just for one user
-        // otherwise, when we need to change the data but not want to apply to the database, do like follow
-        colPage.forEach(
-            col -> {
-                Collection collection = new Collection(null, col.getLink(), col.getDescription(), col.getImage());
-                collection.setId(col.getId());
-                collection.setCreateDate(col.getCreateDate());
-                collection.setUpdateDate(col.getUpdateDate());
-                collections.add(collection);
-            });
-        return collections;
+        return getFromPage(colPage, false);
     }
 
     public boolean isExistCollection(long id) {
@@ -79,7 +68,7 @@ public class CollectionService {
 
         Link link = collection.getLink();
         if (StringUtils.isEmpty(link.getUrlUnique())) {
-            link = new Link(link.getUrl(), link.getTitle()); // update link, add unique code
+            link = link.cloneSelf(); // update link, add unique code
         }
         Link one = linkRepository.findFirstByUrl(link.getUrl());
         if (one == null) {
@@ -90,6 +79,8 @@ public class CollectionService {
         Collection col = collectionRepository.findOneByUserAndLink(user, link);
         if (col == null) {
             collection.setCreateDate(DateTime.now().toDate());
+        } else {
+            collection.setCreateDate(col.getCreateDate());
         }
         collection.setUpdateDate(DateTime.now().toDate());
         collectionRepository.save(collection);
@@ -97,5 +88,29 @@ public class CollectionService {
 
     public Collection findByID(long id) {
         return collectionRepository.findOne(id);
+    }
+
+    public List<Collection> findCollection(String url, int page, int size, Sort sort) {
+        Link link = linkRepository.findFirstByUrl(url);
+        Page<Collection> colPage = collectionRepository.findByLink(link, new PageRequest(page, size, sort));
+        return getFromPage(colPage, true);
+    }
+
+    private List<Collection> getFromPage(Page<Collection> colPage, boolean withUser) {
+        List<Collection> collections = new ArrayList<>(colPage.getContent().size());
+        // set user field null, because what we find is just for one user
+        // otherwise, when we need to change the data but not want to apply to the database, do like follow
+        colPage.forEach(
+            col -> {
+                Collection collection = new Collection(null, col.getLink(), col.getDescription(), col.getImage());
+                if (withUser) {
+                    collection.setUser(col.getUser());
+                }
+                collection.setId(col.getId());
+                collection.setCreateDate(col.getCreateDate());
+                collection.setUpdateDate(col.getUpdateDate());
+                collections.add(collection);
+            });
+        return collections;
     }
 }

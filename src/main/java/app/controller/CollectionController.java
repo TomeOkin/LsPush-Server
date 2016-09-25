@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/user/collection")
+@RequestMapping("/api/collection")
 public class CollectionController {
     private final AuthService authService;
     private final CollectionService collectionService;
@@ -67,6 +67,18 @@ public class CollectionController {
 
         List<Collection> collectionList =
             collectionService.findByUser(uid, page, size, new Sort(direction, sortProperty));
+        return new CollectionResponse(collectionList);
+    }
+
+    @GetMapping("/getByUrl")
+    public CollectionResponse getCollectionsFromLink(@RequestParam(value = "url") String url,
+        @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+        @RequestParam(value = "size", defaultValue = "20", required = false) int size,
+        @RequestParam(value = "order", defaultValue = "DESC", required = false) Sort.Direction direction,
+        @RequestParam(value = "sort", defaultValue = "update_date", required = false) String sortProperty) {
+
+        List<Collection> collectionList =
+            collectionService.findCollection(url, page, size, new Sort(direction, sortProperty));
         return new CollectionResponse(collectionList);
     }
 }

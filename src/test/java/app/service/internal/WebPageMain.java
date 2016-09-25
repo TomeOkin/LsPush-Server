@@ -29,16 +29,17 @@ public class WebPageMain {
 
     @Test
     public void test() throws Exception {
-        WebPageInfo info = WebPageUtil.parse("http://www.jianshu.com/p/2a9fcf3c11e4#");
+        WebPageInfo info = WebPageUtil.parse("http://www.jianshu.com/p/2a9fcf3c11e4#", null);
         logger.info(info.toString());
-        info = WebPageUtil.parse("http://www.cnblogs.com/jasondan/p/3497757.html");
+        info = WebPageUtil.parse("http://www.cnblogs.com/jasondan/p/3497757.html", null);
         logger.info(info.toString());
-        info = WebPageUtil.parse("http://gold.xitu.io/entry/57cf7e4bbf22ec005f8ad230");
+        info = WebPageUtil.parse("http://gold.xitu.io/entry/57cf7e4bbf22ec005f8ad230", null);
         logger.info(info.toString());
-        info = WebPageUtil.parse("http://toutiao.io/posts/m0oht1");
+        info = WebPageUtil.parse("http://toutiao.io/posts/m0oht1", null);
         logger.info(info.toString());
         info =
-            WebPageUtil.parse("http://yaq.qq.com/blog/10?hmsr=toutiao.io&utm_medium=toutiao.io&utm_source=toutiao.io");
+            WebPageUtil.parse("http://yaq.qq.com/blog/10?hmsr=toutiao.io&utm_medium=toutiao.io&utm_source=toutiao.io",
+                null);
         logger.info(info.toString());
     }
 }

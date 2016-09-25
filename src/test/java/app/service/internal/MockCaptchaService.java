@@ -16,6 +16,7 @@
 package app.service.internal;
 
 import app.config.LsPushProperties;
+import app.data.local.UserRepository;
 import app.data.validator.UserInfoValidator;
 import app.service.CaptchaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,9 +29,9 @@ public class MockCaptchaService extends CaptchaService {
     private String captcha;
 
     public MockCaptchaService(UserInfoValidator userInfoValidator, LsPushProperties lsPushProperties,
-        JavaMailSender mailSender,
-        TemplateEngine templateEngine, ObjectMapper objectMapper) {
-        super(userInfoValidator, lsPushProperties, mailSender, templateEngine, objectMapper);
+        JavaMailSender mailSender, TemplateEngine templateEngine, ObjectMapper objectMapper,
+        UserRepository userRepository) {
+        super(userInfoValidator, lsPushProperties, mailSender, templateEngine, objectMapper, userRepository);
     }
 
     @Override

@@ -48,7 +48,8 @@ public class AuthServiceTest {
     @Test
     public void checkExpireToken() {
         MockCaptchaService captchaService =
-            new MockCaptchaService(userInfoValidator, lsPushProperties, mailSender, templateEngine, objectMapper);
+            new MockCaptchaService(userInfoValidator, lsPushProperties, mailSender, templateEngine, objectMapper,
+                userRepository);
         AuthService authService =
             new AuthService(objectMapper, captchaService, userInfoValidator, userRepository);
 

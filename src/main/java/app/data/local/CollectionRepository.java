@@ -29,6 +29,8 @@ public interface CollectionRepository extends CrudRepository<Collection, Long>, 
 
     Collection findOneByUserAndLink(User user, Link link);
 
+    Page<Collection> findByLink(Link link, Pageable pageable);
+
     // just for test now, don't need cache
     //void removeByUserAndLink(User user, Link link);
 

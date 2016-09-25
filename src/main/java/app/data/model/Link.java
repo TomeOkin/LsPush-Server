@@ -87,6 +87,10 @@ public class Link implements Serializable {
         return collections;
     }
 
+    public Link cloneSelf() {
+        return new Link(url, title);
+    }
+
     @Override public String toString() {
         return "Link{" +
             "id='" + id + '\'' +

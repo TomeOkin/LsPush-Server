@@ -40,8 +40,11 @@ public class UserController {
         this.authService = authService;
     }
 
-    @GetMapping("/")
+//    @Autowired RedisTemplate<String, Collection> template;
+    @GetMapping("")
     public String hello() {
+//        logger.info("send collection");
+//        template.convertAndSend("collection", new Collection(null, null, "hello", null));
         return "hello person!";
     }
 

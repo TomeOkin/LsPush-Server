@@ -16,6 +16,7 @@
 package app.data.parse;
 
 import app.data.model.WebPageInfo;
+import com.google.common.cache.Cache;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -32,15 +33,24 @@ public class WebPageUtil {
     public static final String FIREFOX_USER_AGENT =
         "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.2357.125 Safari/537.36 OPR/30.0.1835.88";
 
-    public static WebPageInfo parse(String url) throws IOException {
-        WebPageInfo info = new WebPageInfo();
-        info.url = url;
+    public static WebPageInfo parse(String url, Cache<String, WebPageInfo> urlInfoCache) throws IOException {
+        String original = url;
 
         // hit toutiao.io
-        if (info.url.startsWith("http://toutiao.io/posts/")) {
-            info.url = info.url.replace("/posts/", "/j/");
+        if (original.startsWith("http://toutiao.io/posts/")) {
+            original = original.replace("/posts/", "/j/");
         }
 
+        // check cache
+        WebPageInfo info = urlInfoCache != null ? urlInfoCache.getIfPresent(original) : null;
+        if (info != null) {
+            return info;
+        } else {
+            info = new WebPageInfo();
+            info.url = original;
+        }
+
+        // attach url
         Document doc = Jsoup.connect(info.url).userAgent(GOOGLE_USER_AGENT).get();
         info.url = doc.baseUri(); // or doc.location()
 
@@ -100,6 +110,10 @@ public class WebPageUtil {
         }
         info.description = ellipsis(info.description, 120, "...");
 
+        // cache info
+        if (urlInfoCache != null) {
+            urlInfoCache.put(original, info);
+        }
         return info;
     }
 

@@ -15,11 +15,35 @@
  */
 package app.service;
 
+import app.data.model.WebPageInfo;
+import app.data.parse.WebPageUtil;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class FetchService {
-    public FetchService() {
+    private static final Logger logger = LoggerFactory.getLogger(FetchService.class);
+    private final Cache<String, WebPageInfo> urlInfoCache;
 
+    public FetchService() {
+        urlInfoCache = CacheBuilder.newBuilder()
+            .initialCapacity(100)
+            .maximumSize(500)
+            .expireAfterWrite(2, TimeUnit.HOURS)
+            .build();
+    }
+
+    public WebPageInfo getUrlInfo(String url) {
+        try {
+            return WebPageUtil.parse(url, urlInfoCache);
+        } catch (Exception e) {
+            logger.warn("get url info false", e);
+        }
+        return null;
     }
 }

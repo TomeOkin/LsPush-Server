@@ -110,7 +110,6 @@ public class Collection implements Serializable {
         Collection that = (Collection) o;
 
         return id == that.id;
-
     }
 
     @Override public int hashCode() {
