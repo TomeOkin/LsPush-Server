@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.data.local;
+package app.data.model.internal;
 
-import app.data.model.Favor;
+public class FreshEvent {
+    public static final int EVENT_COLLECTION = 1;
+    public static final int EVENT_FAVOR = 2;
+    public static final int EVENT_UN_COLLECTION = 3;
+    public static final int EVENT_UN_FAVOR = 4;
 
-public interface FavorRepository {
-    void addFavor(long colId, Favor.Data data);
+    public int event;
+    public int colId;
 
-    void removeFavor(long colId, String uid);
-
-    Favor findFavor(long colId);
-
-    void dropAll();
+    @Override public String toString() {
+        return "FreshEvent{" +
+            "event=" + event +
+            ", colId=" + colId +
+            '}';
+    }
 }

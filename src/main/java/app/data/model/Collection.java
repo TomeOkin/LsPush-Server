@@ -15,13 +15,12 @@
  */
 package app.data.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
-@Entity
+@Entity(name = "Collection")
 public class Collection implements Serializable {
     private static final long serialVersionUID = 6379948649053059650L;
 
@@ -36,6 +35,9 @@ public class Collection implements Serializable {
 
     @Column(name = "create_date") @Temporal(TemporalType.TIMESTAMP) private Date createDate;
     @Column(name = "update_date") @Temporal(TemporalType.TIMESTAMP) private Date updateDate;
+
+    @Transient private List<User> explorer; // uid, nickname, image
+    @Transient private long favorCount;
 
     public Collection() {
     }
@@ -91,7 +93,7 @@ public class Collection implements Serializable {
         return createDate;
     }
 
-    @JsonIgnore public void setCreateDate(Date createDate) {
+    public void setCreateDate(Date createDate) {
         this.createDate = createDate;
     }
 
@@ -99,8 +101,24 @@ public class Collection implements Serializable {
         return updateDate;
     }
 
-    @JsonIgnore public void setUpdateDate(Date updateDate) {
+    public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public List<User> getExplorer() {
+        return explorer;
+    }
+
+    public void setExplorer(List<User> explorer) {
+        this.explorer = explorer;
+    }
+
+    public long getFavorCount() {
+        return favorCount;
+    }
+
+    public void setFavorCount(long favorCount) {
+        this.favorCount = favorCount;
     }
 
     @Override public boolean equals(Object o) {
@@ -125,6 +143,8 @@ public class Collection implements Serializable {
             ", image='" + image + '\'' +
             ", createDate=" + createDate +
             ", updateDate=" + updateDate +
+            ", explorer=" + explorer +
+            ", favorCount=" + favorCount +
             '}';
     }
 }

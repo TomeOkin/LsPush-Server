@@ -16,15 +16,15 @@
 package app.controller;
 
 import app.config.ResultCode;
-import app.data.model.AccessResponse;
-import app.data.model.BaseResponse;
-import app.data.model.CaptchaRequest;
-import app.data.model.CryptoToken;
+import app.data.model.*;
+import app.data.model.internal.FreshEvent;
 import app.service.AuthService;
 import app.service.CaptchaService;
+import app.service.FreshService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -40,11 +40,17 @@ public class UserController {
         this.authService = authService;
     }
 
-//    @Autowired RedisTemplate<String, Collection> template;
+    //    @Autowired RedisTemplate<String, Collection> template;
+    @Autowired JmsTemplate jmsTemplate;
+
     @GetMapping("")
     public String hello() {
-//        logger.info("send collection");
-//        template.convertAndSend("collection", new Collection(null, null, "hello", null));
+        FreshEvent event = new FreshEvent();
+        event.event = FreshEvent.EVENT_COLLECTION;
+        event.colId = 101;
+        jmsTemplate.convertAndSend(FreshService.DESTINATION, event);
+        //        logger.info("send collection");
+        //        template.convertAndSend("collection", new Collection(null, null, "hello", null));
         return "hello person!";
     }
 

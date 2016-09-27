@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.data.local;
+package app.data.model;
 
-import app.data.model.Favor;
+public class FavorResponse extends BaseResponse {
+    private Favor favor;
 
-public interface FavorRepository {
-    void addFavor(long colId, Favor.Data data);
+    public FavorResponse(Favor favor) {
+        this.favor = favor;
+    }
 
-    void removeFavor(long colId, String uid);
+    public FavorResponse(int resultCode, String result, Favor favor) {
+        super(resultCode, result);
+        this.favor = favor;
+    }
 
-    Favor findFavor(long colId);
+    public Favor getFavor() {
+        return favor;
+    }
 
-    void dropAll();
+    public void setFavor(Favor favor) {
+        this.favor = favor;
+    }
 }

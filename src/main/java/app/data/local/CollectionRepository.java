@@ -39,4 +39,6 @@ public interface CollectionRepository extends CrudRepository<Collection, Long>, 
     @Override Collection findOne(Long id);
 
     @Override <S extends Collection> S save(S entity);
+
+    Page<Collection> findAll(Pageable pageable);
 }

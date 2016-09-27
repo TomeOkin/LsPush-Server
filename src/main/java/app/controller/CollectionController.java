@@ -75,10 +75,18 @@ public class CollectionController {
         @RequestParam(value = "page", defaultValue = "0", required = false) int page,
         @RequestParam(value = "size", defaultValue = "20", required = false) int size,
         @RequestParam(value = "order", defaultValue = "DESC", required = false) Sort.Direction direction,
-        @RequestParam(value = "sort", defaultValue = "update_date", required = false) String sortProperty) {
+        @RequestParam(value = "sort", defaultValue = "updateDate", required = false) String sortProperty) {
 
         List<Collection> collectionList =
             collectionService.findCollection(url, page, size, new Sort(direction, sortProperty));
         return new CollectionResponse(collectionList);
+    }
+
+    @GetMapping("/getLatest")
+    public CollectionResponse getLatestCollections(
+        @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+        @RequestParam(value = "size", defaultValue = "20", required = false) int size) {
+        List<Collection> colList = collectionService.getLatestCollection(page, size);
+        return new CollectionResponse(colList);
     }
 }

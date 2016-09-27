@@ -16,11 +16,9 @@
 package app.data.model.internal;
 
 import app.data.model.User;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
 
 @Entity
 public class Pin implements Serializable {
@@ -28,9 +26,6 @@ public class Pin implements Serializable {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private long id;
     private String pins;
-
-    @JsonIgnoreProperties(allowGetters = true) @Column(name = "pin_date") @Temporal(TemporalType.TIMESTAMP)
-    private Date pinDate;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "pin_user_id_constraint")) private User user;
@@ -63,7 +58,6 @@ public class Pin implements Serializable {
         return "Pin{" +
             "id=" + id +
             ", pins='" + pins + '\'' +
-            ", pinDate=" + pinDate +
             ", user=" + user +
             '}';
     }

@@ -16,11 +16,15 @@
 package app.service;
 
 import app.App;
+import app.data.local.FavorRepository;
 import app.data.local.UserRepository;
 import app.data.model.Collection;
+import app.data.model.Favor;
 import app.data.model.Link;
 import app.data.model.User;
+import org.joda.time.DateTime;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -36,33 +40,72 @@ import java.util.List;
 @SpringBootTest(classes = App.class)
 public class CollectionServiceTest {
     private static final Logger logger = LoggerFactory.getLogger(CollectionServiceTest.class);
-    @Autowired CollectionService collectionService;
+    @Autowired CollectionService colService;
     @Autowired UserRepository userRepository;
+    @Autowired FavorRepository favorRepository;
+
+    private User one;
+    private User two;
+
+    @Before
+    public void initUser() {
+        one = new User();
+        one.setUid("one");
+        one.setNickname("One");
+        one.setEmail("123456@qq.com");
+        one.setPassword("abc123456");
+        one.setValidate(User.EMAIL_VALID);
+        userRepository.save(one);
+
+        two = new User();
+        two.setUid("two");
+        two.setNickname("Two");
+        two.setPhone("1310890");
+        two.setPassword("pwd123456");
+        two.setValidate(User.PHONE_VALID);
+        userRepository.save(two);
+    }
 
     @Test
     public void collectionTest() {
-        User user = new User();
-        user.setUid("abcd");
-        user.setNickname("acdf");
-        user.setEmail("123456@qq.com");
-        user.setPassword("abc123456");
-        user.setValidate(User.EMAIL_VALID);
-        userRepository.save(user);
-
         Link link = new Link("https://www.google.com", "Google");
-        Collection collection = new Collection(user, link, "google search", "");
-        collectionService.postCollection(user.getUid(), collection);
+        Collection googleCol = new Collection(one, link, "google search", "");
+        colService.postCollection(one.getUid(), googleCol);
 
         link = new Link("https://www.baidu.com", "Baidu");
-        collection = new Collection(user, link, "baidu search", "");
-        collectionService.postCollection(user.getUid(), collection);
+        Collection baiduCol = new Collection(one, link, "baidu search", "");
+        colService.postCollection(one.getUid(), baiduCol);
 
-        List<Collection> collections =
-            collectionService.findByUser(user.getUid(), 0, 5, new Sort(Sort.Direction.DESC, "createDate"));
-        Assert.assertNotNull(collections);
+        baiduCol = new Collection(one, link, "Baidu Search", "");
+        colService.postCollection(two.getUid(), baiduCol);
 
-        Collection col = collections.get(0);
-        Assert.assertTrue(col.toString().contains("baidu"));
+        List<Collection> cols = colService.findByUser(one.getUid(), 0, 5, new Sort(Sort.Direction.DESC, "updateDate"));
+        Assert.assertNotNull(cols);
+
+        Collection col = cols.get(0);
         logger.info(col.toString());
+        Assert.assertTrue(col.toString().contains("baidu"));
+
+        long colId = col.getId();
+
+        Favor.Data data = new Favor.Data();
+        data.date = DateTime.now().toDate();
+        data.uid = one.getUid();
+        favorRepository.addFavor(colId, data);
+        favorRepository.addFavor(colId, data);
+
+        // prepare favor
+        data = new Favor.Data();
+        data.date = DateTime.now().toDate();
+        data.uid = two.getUid();
+        favorRepository.addFavor(colId, data);
+
+        // getLatestCollection
+        List<Collection> latestCols = colService.getLatestCollection(0, 5);
+        for (Collection item : latestCols) {
+            logger.info(item.toString());
+        }
+
+        favorRepository.removeFavor(colId, one.getUid());
     }
 }

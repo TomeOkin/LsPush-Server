@@ -44,33 +44,49 @@ repositories {
 
 dependencies {
     compile "org.springframework.boot:spring-boot-starter-web"
+
+    // jpa
     compile ("org.springframework.boot:spring-boot-starter-data-jpa") {
         exclude group: 'org.hibernate', module:'hibernate-entitymanager'
+        exclude group: 'org.hibernate', module:'hibernate-core'
     }
     compile "org.hibernate:hibernate-core:5.2.2.Final"
-    compile "org.springframework.boot:spring-boot-starter-mail"
     compile "mysql:mysql-connector-java:5.1.39"
+
+    compile "org.springframework.boot:spring-boot-starter-mail"
     compile "com.googlecode.libphonenumber:libphonenumber:7.7.0"
     compile "commons-validator:commons-validator:1.5.1"
     compile "com.google.guava:guava:19.0"
     compile "org.apache.commons:commons-lang3:3.4"
     compile "joda-time:joda-time:2.9.4"
+    compile "org.jsoup:jsoup:1.9.2"
 
     // thymeleaf 3
-    compile "org.springframework.boot:spring-boot-starter-thymeleaf"
+    compile ("org.springframework.boot:spring-boot-starter-thymeleaf") {
+        exclude group: 'org.thymeleaf', module:'thymeleaf-spring4'
+        exclude group: 'nz.net.ultraq.thymeleaf', module:'thymeleaf-layout-dialect'
+    }
     compile "org.thymeleaf:thymeleaf-spring4:3.0.1.RELEASE"
     compile "org.thymeleaf:thymeleaf:3.0.1.RELEASE"
     compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.0.3"
 
-    compile "org.jsoup:jsoup:1.9.2"
+    // redis
+    compile ("org.springframework.boot:spring-boot-starter-data-redis") {
+        exclude group: 'redis.clients', module:'jedis'
+    }
+    compile "redis.clients:jedis:2.9.0"
 
-//    compile "org.springframework.boot:spring-boot-starter-data-redis"
-//    compile "redis.clients:jedis:2.9.0"
-
+    // mongodb
     compile "org.springframework.boot:spring-boot-starter-data-mongodb"
 
+    // jms
+    compile ("org.springframework.boot:spring-boot-starter-activemq") {
+        exclude group: 'org.apache.activemq', module:'activemq-broker'
+    }
+    compile "org.apache.activemq:activemq-broker:5.14.0"
+
     // cache
-    compile "org.springframework.boot:spring-boot-starter-cache"
+    //compile "org.springframework.boot:spring-boot-starter-cache"
 
 //    // JSR-107 API (uncomment to try the JCache support)
 //    compile "javax.cache:cache-api:1.0.0"

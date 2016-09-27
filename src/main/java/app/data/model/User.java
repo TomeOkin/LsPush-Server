@@ -47,6 +47,9 @@ public class User implements Serializable {
     @JsonIgnore @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Pin pin;
 
+    @Transient
+    private long colId;
+
     public String getUid() {
         return uid;
     }
@@ -119,6 +122,22 @@ public class User implements Serializable {
         return pin;
     }
 
+    public long getColId() {
+        return colId;
+    }
+
+    public void setColId(long colId) {
+        this.colId = colId;
+    }
+
+    public User cloneProfile() {
+        User user = new User();
+        user.setUid(uid);
+        user.setNickname(nickname);
+        user.setImage(image);
+        return user;
+    }
+
     public User cloneSelfPublic() {
         User user = new User();
         user.setUid(uid);
@@ -140,6 +159,10 @@ public class User implements Serializable {
             ", region='" + region + '\'' +
             ", password='" + password + '\'' +
             ", validate=" + validate +
+            ", image='" + image + '\'' +
+            ", collections=" + collections +
+            ", pin=" + pin +
+            ", colId=" + colId +
             '}';
     }
 

@@ -17,8 +17,6 @@ package app.data.local;
 
 import app.data.model.Favor;
 import com.mongodb.BasicDBObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -26,11 +24,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component("favorRepository")
 public class FavorRepositoryImpl implements FavorRepository {
-    private static final Logger logger = LoggerFactory.getLogger(FavorRepositoryImpl.class);
     private final MongoTemplate mongoTemplate;
 
     @Autowired
@@ -62,12 +57,11 @@ public class FavorRepositoryImpl implements FavorRepository {
         mongoTemplate.updateMulti(query, update, Favor.class);
     }
 
-    @Override public List<Favor.Data> findFavor(long colId) {
+    @Override public Favor findFavor(long colId) {
         Query query = new Query();
         query.addCriteria(Criteria.where("collectionId").is(colId));
 
-        Favor favor = mongoTemplate.findOne(query, Favor.class);
-        return favor != null ? favor.dataList : null;
+        return mongoTemplate.findOne(query, Favor.class);
     }
 
     @Override public void dropAll() {

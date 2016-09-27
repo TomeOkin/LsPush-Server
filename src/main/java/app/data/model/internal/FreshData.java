@@ -13,16 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.data.local;
+package app.data.model.internal;
 
-import app.data.model.Favor;
-
-public interface FavorRepository {
-    void addFavor(long colId, Favor.Data data);
-
-    void removeFavor(long colId, String uid);
-
-    Favor findFavor(long colId);
-
-    void dropAll();
+public class FreshData {
+    public long colId;
+    public long favor;
 }
