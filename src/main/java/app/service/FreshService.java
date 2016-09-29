@@ -39,12 +39,12 @@ public class FreshService {
 
     @PostConstruct
     public void init() {
-//        long count = template.opsForZSet().count(FRESH_COLLECTION_SET, 0, Double.MAX_VALUE);
-//        Set<ZSetOperations.TypedTuple<String>> values = new HashSet<>();
-//        for (int i = (int) count; i < 100; i++) {
-//            values.add(new DefaultTypedTuple<>(String.valueOf(i - 100), 0d));
-//        }
-//        template.opsForZSet().add(FRESH_COLLECTION_SET, values);
+        //        long count = template.opsForZSet().count(FRESH_COLLECTION_SET, 0, Double.MAX_VALUE);
+        //        Set<ZSetOperations.TypedTuple<String>> values = new HashSet<>();
+        //        for (int i = (int) count; i < 100; i++) {
+        //            values.add(new DefaultTypedTuple<>(String.valueOf(i - 100), 0d));
+        //        }
+        //        template.opsForZSet().add(FRESH_COLLECTION_SET, values);
     }
 
     @JmsListener(destination = DESTINATION, containerFactory = "defaultFactory")
@@ -56,11 +56,11 @@ public class FreshService {
             return;
         }
 
-//        logger.info(event.toString());
-//        String value = String.valueOf(event.colId);
-//        if (event.event == FreshEvent.EVENT_COLLECTION) {
-//            //template.opsForZSet().
-//            template.opsForZSet().add(FRESH_COLLECTION_SET, value, 1);
-//        }
+        //        logger.info(event.toString());
+        //        String value = String.valueOf(event.colId);
+        //        if (event.event == FreshEvent.EVENT_COLLECTION) {
+        //            //template.opsForZSet().
+        //            template.opsForZSet().add(FRESH_COLLECTION_SET, value, 1);
+        //        }
     }
 }

@@ -16,7 +16,10 @@
 package app.controller;
 
 import app.config.ResultCode;
-import app.data.model.*;
+import app.data.model.AccessResponse;
+import app.data.model.BaseResponse;
+import app.data.model.CaptchaRequest;
+import app.data.model.CryptoToken;
 import app.data.model.internal.FreshEvent;
 import app.service.AuthService;
 import app.service.CaptchaService;

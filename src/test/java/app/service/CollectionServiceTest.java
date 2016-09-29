@@ -90,14 +90,14 @@ public class CollectionServiceTest {
         Favor.Data data = new Favor.Data();
         data.date = DateTime.now().toDate();
         data.uid = one.getUid();
-        mFavorRepo.addFavor(colId, data);
-        mFavorRepo.addFavor(colId, data);
+        mFavorRepo.add(colId, data);
+        mFavorRepo.add(colId, data);
 
         // prepare favor
         data = new Favor.Data();
         data.date = DateTime.now().toDate();
         data.uid = two.getUid();
-        mFavorRepo.addFavor(colId, data);
+        mFavorRepo.add(colId, data);
 
         // getLatestCollection
         List<Collection> latestCols = mColService.getLatestCollection(0, 5);
@@ -105,7 +105,7 @@ public class CollectionServiceTest {
             logger.info(item.toString());
         }
 
-        mFavorRepo.removeFavor(colId, one.getUid());
+        mFavorRepo.remove(colId, one.getUid());
     }
 
     @Test
@@ -125,7 +125,7 @@ public class CollectionServiceTest {
         Assert.assertNotNull(colTag);
         logger.info(colTag.toString());
 
-        List<CollectionTag> colTags = mColTagRepo.findByTags(Arrays.asList("hello"));
+        List<CollectionTag> colTags = mColTagRepo.findByTags(Arrays.asList("hello"), null);
         Assert.assertNotNull(colTags);
         Assert.assertEquals("colTags count is", 2, colTags.size());
         for (CollectionTag tag : colTags) {

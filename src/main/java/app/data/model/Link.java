@@ -91,7 +91,8 @@ public class Link implements Serializable {
         return new Link(url, title);
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "Link{" +
             "id='" + id + '\'' +
             ", url='" + url + '\'' +
@@ -100,7 +101,8 @@ public class Link implements Serializable {
             '}';
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -111,7 +113,8 @@ public class Link implements Serializable {
 
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         int result = url != null ? url.hashCode() : 0;
         result = 31 * result + (urlUnique != null ? urlUnique.hashCode() : 0);
         return result;

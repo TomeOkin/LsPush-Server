@@ -18,11 +18,11 @@ package app.data.local;
 import app.data.model.Favor;
 
 public interface FavorRepository {
-    void addFavor(long colId, Favor.Data data);
+    void add(long colId, Favor.Data data);
 
-    void removeFavor(long colId, String uid);
+    void remove(long colId, String uid);
 
-    Favor findFavor(long colId);
+    Favor findById(long colId);
 
     void dropAll();
 }

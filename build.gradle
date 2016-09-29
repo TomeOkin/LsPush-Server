@@ -54,7 +54,7 @@ dependencies {
     compile "mysql:mysql-connector-java:5.1.39"
 
     compile "org.springframework.boot:spring-boot-starter-mail"
-    compile "com.googlecode.libphonenumber:libphonenumber:7.7.0"
+    compile "com.googlecode.libphonenumber:libphonenumber:7.7.1"
     compile "commons-validator:commons-validator:1.5.1"
     compile "com.google.guava:guava:19.0"
     compile "org.apache.commons:commons-lang3:3.4"
@@ -66,8 +66,8 @@ dependencies {
         exclude group: 'org.thymeleaf', module:'thymeleaf-spring4'
         exclude group: 'nz.net.ultraq.thymeleaf', module:'thymeleaf-layout-dialect'
     }
-    compile "org.thymeleaf:thymeleaf-spring4:3.0.1.RELEASE"
-    compile "org.thymeleaf:thymeleaf:3.0.1.RELEASE"
+    compile "org.thymeleaf:thymeleaf-spring4:3.0.2.RELEASE"
+    compile "org.thymeleaf:thymeleaf:3.0.2.RELEASE"
     compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.0.3"
 
     // redis
@@ -84,6 +84,9 @@ dependencies {
         exclude group: 'org.apache.activemq', module:'activemq-broker'
     }
     compile "org.apache.activemq:activemq-broker:5.14.0"
+
+    // annotations support
+    compile "com.google.code.findbugs:jsr305:3.0.1"
 
     // cache
     //compile "org.springframework.boot:spring-boot-starter-cache"

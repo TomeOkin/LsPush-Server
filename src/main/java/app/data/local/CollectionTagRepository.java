@@ -16,15 +16,19 @@
 package app.data.local;
 
 import app.data.model.CollectionTag;
+import org.springframework.data.domain.Pageable;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public interface CollectionTagRepository {
     void update(CollectionTag colTag);
 
+    @Nullable
     CollectionTag findByCollectionId(long colId);
 
-    List<CollectionTag> findByTags(List<String> tags);
+    @Nullable
+    List<CollectionTag> findByTags(List<String> tags, @Nullable Pageable pageable);
 
     void dropAll();
 }

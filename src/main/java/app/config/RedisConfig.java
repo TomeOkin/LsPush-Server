@@ -17,20 +17,20 @@ package app.config;
 
 //@Configuration
 public class RedisConfig {
-//    //@Bean
-//    public JedisConnectionFactory connectionFactory() {
-//        JedisConnectionFactory connectionFactory = new JedisConnectionFactory();
-//        connectionFactory.setHostName("localhost");
-//        connectionFactory.setPort(6379);
-//        return connectionFactory;
-//    }
-//
-//    //@Bean
-//    public RedisTemplate<String, Long> redisTemplate() {
-//        RedisTemplate<String, Long> redisTemplate = new RedisTemplate<>();
-//        redisTemplate.setConnectionFactory(connectionFactory());
-//        redisTemplate.setKeySerializer(new StringRedisSerializer());
-//        return redisTemplate;
-//    }
+    //    //@Bean
+    //    public JedisConnectionFactory connectionFactory() {
+    //        JedisConnectionFactory connectionFactory = new JedisConnectionFactory();
+    //        connectionFactory.setHostName("localhost");
+    //        connectionFactory.setPort(6379);
+    //        return connectionFactory;
+    //    }
+    //
+    //    //@Bean
+    //    public RedisTemplate<String, Long> redisTemplate() {
+    //        RedisTemplate<String, Long> redisTemplate = new RedisTemplate<>();
+    //        redisTemplate.setConnectionFactory(connectionFactory());
+    //        redisTemplate.setKeySerializer(new StringRedisSerializer());
+    //        return redisTemplate;
+    //    }
 
 }

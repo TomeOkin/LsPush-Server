@@ -52,13 +52,6 @@ public class CollectionService {
         mLatestSort = new Sort(Sort.Direction.DESC, "updateDate", "id");
     }
 
-    public List<Collection> findByUser(String uid, int page, int size) {
-        User user = new User();
-        user.setUid(uid);
-        Page<Collection> colPage = mColRepo.findByUser(user, new PageRequest(page, size, mLatestSort));
-        return getFromPage(colPage, false);
-    }
-
     public Collection findByID(long id) {
         return mColRepo.findOne(id);
     }
@@ -68,13 +61,13 @@ public class CollectionService {
     }
 
     @Transactional
-    public void postCollection(String uid, Collection collection) {
+    public void postCollection(String uid, Collection col) {
         // region: update collection
         User user = new User();
         user.setUid(uid);
-        collection.setUser(user);
+        col.setUser(user);
 
-        Link link = collection.getLink();
+        Link link = col.getLink();
         if (StringUtils.isEmpty(link.getUrlUnique())) {
             link = link.cloneSelf(); // update link, add unique code
         }
@@ -82,67 +75,85 @@ public class CollectionService {
         if (one == null) {
             mLinkRepo.save(link);
         }
-        collection.setLink(link);
+        col.setLink(link);
 
-        Collection col = mColRepo.findOneByUserAndLink(user, link);
-        if (col == null) {
-            collection.setCreateDate(DateTime.now().toDate());
+        Collection old = mColRepo.findOneByUserAndLink(user, link);
+        if (old == null) {
+            col.setCreateDate(DateTime.now().toDate());
         } else {
-            collection.setCreateDate(col.getCreateDate());
+            col.setCreateDate(old.getCreateDate());
         }
-        collection.setUpdateDate(DateTime.now().toDate());
-        mColRepo.save(collection);
+        col.setUpdateDate(DateTime.now().toDate());
+        mColRepo.save(col);
         // endregion
 
         // region: update collection tag
-        CollectionTag colTag = new CollectionTag(collection.getId(), collection.getTags());
+        CollectionTag colTag = new CollectionTag(col.getId(), col.getTags());
         mColTagRepo.update(colTag);
         // endregion
     }
 
-    public List<Collection> findCollection(String url, int page, int size, Sort sort) {
+    public List<Collection> findByUser(String uid, int page, int size) {
+        User user = new User();
+        user.setUid(uid);
+        Page<Collection> colPage = mColRepo.findByUser(user, new PageRequest(page, size, mLatestSort));
+        List<Collection> colList = getFromPage(colPage, false);
+        colList.forEach(this::fillCollection);
+        return colList;
+    }
+
+    public List<Collection> findByUrl(String url, int page, int size, Sort sort) {
         Link link = mLinkRepo.findFirstByUrl(url);
         Page<Collection> colPage = mColRepo.findByLink(link, new PageRequest(page, size, sort));
-        List<Collection> collectionList = getFromPage(colPage, true);
-        fillCollection(collectionList);
-        return  collectionList;
+        List<Collection> colList = getFromPage(colPage, true);
+        colList.forEach(this::fillCollection);
+        return colList;
     }
 
     public List<Collection> getLatestCollection(int page, int size) {
-        Page<Collection> collectionPage = mColRepo.findAll(new PageRequest(page, size, mLatestSort));
-        List<Collection> collectionList = getFromPage(collectionPage, true);
-        fillCollection(collectionList);
-        return collectionList;
+        Page<Collection> colPage = mColRepo.findAll(new PageRequest(page, size, mLatestSort));
+        List<Collection> colList = getFromPage(colPage, true);
+        colList.forEach(this::fillCollection);
+        return colList;
     }
 
-    private void fillCollection(List<Collection> collectionList) {
-        for (Collection collection : collectionList) {
-            // region: collection favor count
-            Favor favor = mFavorRepo.findFavor(collection.getId());
-            final long count = favor != null && favor.dataList != null ? favor.dataList.size() : 0;
-            collection.setFavorCount(count);
-            // endregion
-
-            // region: link explorers
-            Link link = mLinkRepo.findFirstByUrl(collection.getLink().getUrl());
-            // 默认只提供前 5 个发现者
-            Page<Collection> linkCols = mColRepo.findByLink(link, new PageRequest(0, 5, mCreateSort));
-            List<User> users = new ArrayList<>(linkCols.getContent().size());
-            linkCols.forEach(col -> {
-                User user = col.getUser();
-                user = user.cloneProfile();
-                user.setColId(col.getId());
-                users.add(user);
-            });
-            collection.setExplorers(users);
-            // endregion
-
-            // region: collection tags
-            CollectionTag colTag = mColTagRepo.findByCollectionId(collection.getId());
-            List<String> tags = colTag != null ? colTag.getTags() : null;
-            collection.setTags(tags);
-            // endregion
+    public List<Collection> findByTags(List<String> tags, int page, int size) {
+        List<CollectionTag> colTags = mColTagRepo.findByTags(tags, new PageRequest(page, size));
+        List<Collection> colList = new ArrayList<>(colTags.size());
+        for (CollectionTag colTag : colTags) {
+            Collection col = mColRepo.findOne(colTag.getCollectionId());
+            fillCollection(col);
+            colList.add(col);
         }
+        return colList;
+    }
+
+    private void fillCollection(Collection col) {
+        // region: collection favor count
+        Favor favor = mFavorRepo.findById(col.getId());
+        final long count = favor != null && favor.dataList != null ? favor.dataList.size() : 0;
+        col.setFavorCount(count);
+        // endregion
+
+        // region: link explorers
+        Link link = mLinkRepo.findFirstByUrl(col.getLink().getUrl());
+        // 默认只提供前 5 个发现者
+        Page<Collection> linkCols = mColRepo.findByLink(link, new PageRequest(0, 5, mCreateSort));
+        List<User> users = new ArrayList<>(linkCols.getContent().size());
+        linkCols.forEach(item -> {
+            User user = item.getUser();
+            user = user.cloneProfile();
+            user.setColId(item.getId());
+            users.add(user);
+        });
+        col.setExplorers(users);
+        // endregion
+
+        // region: collection tags
+        CollectionTag colTag = mColTagRepo.findByCollectionId(col.getId());
+        List<String> tags = colTag != null ? colTag.getTags() : null;
+        col.setTags(tags);
+        // endregion
     }
 
     private List<Collection> getFromPage(Page<Collection> colPage, boolean withUser) {
@@ -150,15 +161,15 @@ public class CollectionService {
         // set user field null, because what we find is just for one user
         // otherwise, when we need to change the data but not want to apply to the database, do like follow
         colPage.forEach(
-            col -> {
-                Collection collection = new Collection(null, col.getLink(), col.getDescription(), col.getImage());
+            item -> {
+                Collection col = new Collection(null, item.getLink(), item.getDescription(), item.getImage());
                 if (withUser) {
-                    collection.setUser(col.getUser().cloneProfile());
+                    col.setUser(item.getUser().cloneProfile());
                 }
-                collection.setId(col.getId());
-                collection.setCreateDate(col.getCreateDate());
-                collection.setUpdateDate(col.getUpdateDate());
-                collections.add(collection);
+                col.setId(item.getId());
+                col.setCreateDate(item.getCreateDate());
+                col.setUpdateDate(item.getUpdateDate());
+                collections.add(col);
             });
         return collections;
     }

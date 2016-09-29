@@ -17,12 +17,14 @@ package app.data.local;
 
 import app.data.model.CollectionTag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 @Component("collectionTagRepository")
@@ -49,6 +51,7 @@ public class CollectionTagRepositoryImpl implements CollectionTagRepository {
         mMongoTemplate.upsert(query, update, CollectionTag.class);
     }
 
+    @Nullable
     @Override
     public CollectionTag findByCollectionId(long colId) {
         Query query = new Query();
@@ -57,10 +60,11 @@ public class CollectionTagRepositoryImpl implements CollectionTagRepository {
         return mMongoTemplate.findOne(query, CollectionTag.class);
     }
 
+    @Nullable
     @Override
-    public List<CollectionTag> findByTags(List<String> tags) {
+    public List<CollectionTag> findByTags(List<String> tags, @Nullable Pageable pageable) {
         Query query = new Query();
-        query.addCriteria(Criteria.where("tags").in(tags));
+        query.addCriteria(Criteria.where("tags").in(tags)).with(pageable);
 
         return mMongoTemplate.find(query, CollectionTag.class);
     }

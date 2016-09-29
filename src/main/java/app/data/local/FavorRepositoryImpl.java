@@ -33,7 +33,8 @@ public class FavorRepositoryImpl implements FavorRepository {
         mMongoTemplate = mongoTemplate;
     }
 
-    @Override public void addFavor(long colId, Favor.Data data) {
+    @Override
+    public void add(long colId, Favor.Data data) {
         Query query = new Query();
         query.addCriteria(Criteria.where("collectionId").is(colId));
 
@@ -43,7 +44,8 @@ public class FavorRepositoryImpl implements FavorRepository {
         mMongoTemplate.upsert(query, update, Favor.class);
     }
 
-    @Override public void removeFavor(long colId, String uid) {
+    @Override
+    public void remove(long colId, String uid) {
         Query query = new Query();
         query.addCriteria(
             Criteria.where("collectionId").is(colId).and("dataList").elemMatch(Criteria.where("uid").is(uid)));
@@ -57,14 +59,16 @@ public class FavorRepositoryImpl implements FavorRepository {
         mMongoTemplate.updateMulti(query, update, Favor.class);
     }
 
-    @Override public Favor findFavor(long colId) {
+    @Override
+    public Favor findById(long colId) {
         Query query = new Query();
         query.addCriteria(Criteria.where("collectionId").is(colId));
 
         return mMongoTemplate.findOne(query, Favor.class);
     }
 
-    @Override public void dropAll() {
+    @Override
+    public void dropAll() {
         mMongoTemplate.dropCollection(Favor.class);
     }
 

@@ -45,7 +45,8 @@ public class PinData {
         this.pinDate = pinDate;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "PinData{" +
             "collection=" + collection +
             ", pinDate=" + pinDate +

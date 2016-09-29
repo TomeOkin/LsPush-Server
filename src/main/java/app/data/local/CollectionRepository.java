@@ -34,11 +34,14 @@ public interface CollectionRepository extends CrudRepository<Collection, Long>, 
     // just for test now, don't need cache
     //void removeByUserAndLink(User user, Link link);
 
-    @Override void delete(Long id);
+    @Override
+    void delete(Long id);
 
-    @Override Collection findOne(Long id);
+    @Override
+    Collection findOne(Long id);
 
-    @Override <S extends Collection> S save(S entity);
+    @Override
+    <S extends Collection> S save(S entity);
 
     Page<Collection> findAll(Pageable pageable);
 }

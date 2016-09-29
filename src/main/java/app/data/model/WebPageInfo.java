@@ -20,7 +20,8 @@ public class WebPageInfo {
     public String title;
     public String description;
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "WebPageInfo{" +
             "url='" + url + '\'' +
             ", title='" + title + '\'' +

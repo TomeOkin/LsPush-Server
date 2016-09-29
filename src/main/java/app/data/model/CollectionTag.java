@@ -49,7 +49,8 @@ public class CollectionTag {
         this.tags = tags;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "CollectionTag{" +
             "collectionId=" + collectionId +
             ", tags=" + tags +

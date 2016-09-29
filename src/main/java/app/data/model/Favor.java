@@ -30,7 +30,8 @@ public class Favor {
         @Id public String uid;
         public Date date;
 
-        @Override public String toString() {
+        @Override
+        public String toString() {
             return "Data{" +
                 "uid='" + uid + '\'' +
                 ", date=" + date +
@@ -38,7 +39,8 @@ public class Favor {
         }
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "Favor{" +
             "collectionId=" + collectionId +
             ", dataList=" + dataList +

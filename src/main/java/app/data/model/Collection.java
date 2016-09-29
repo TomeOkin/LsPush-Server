@@ -130,7 +130,8 @@ public class Collection implements Serializable {
         this.tags = tags;
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -139,11 +140,13 @@ public class Collection implements Serializable {
         return id == that.id;
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return (int) (id ^ (id >>> 32));
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "Collection{" +
             "id=" + id +
             ", user=" + user +

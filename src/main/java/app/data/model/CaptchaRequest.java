@@ -35,7 +35,8 @@ public class CaptchaRequest {
         this.region = region;
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -46,7 +47,8 @@ public class CaptchaRequest {
 
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         int result = sendObject.hashCode();
         result = 31 * result + (region != null ? region.hashCode() : 0);
         return result;

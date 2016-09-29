@@ -40,7 +40,7 @@ public class FavorController {
 
     @GetMapping("/get")
     public FavorResponse getFavor(@RequestParam(value = "colId") long colId) {
-        Favor favor = favorRepository.findFavor(colId);
+        Favor favor = favorRepository.findById(colId);
         return new FavorResponse(favor);
     }
 
@@ -55,7 +55,7 @@ public class FavorController {
         if (favor == null || favor.dataList == null || favor.dataList.size() != 1) {
             return new BaseResponse(ResultCode.ARGUMENT_ERROR, ResultCode.errorCode.get(ResultCode.ARGUMENT_ERROR));
         }
-        favorRepository.addFavor(favor.collectionId, favor.dataList.get(0));
+        favorRepository.add(favor.collectionId, favor.dataList.get(0));
         return new BaseResponse();
     }
 }

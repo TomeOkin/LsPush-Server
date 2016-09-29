@@ -23,5 +23,6 @@ import org.springframework.data.repository.CrudRepository;
 public interface PinRepository extends CrudRepository<Pin, Long>, JpaSpecificationExecutor<Pin> {
     Pin findByUser(User user);
 
-    @Override <S extends Pin> S save(S entity);
+    @Override
+    <S extends Pin> S save(S entity);
 }

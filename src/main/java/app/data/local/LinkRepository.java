@@ -21,5 +21,6 @@ import org.springframework.data.repository.CrudRepository;
 public interface LinkRepository extends CrudRepository<Link, Long> {
     Link findFirstByUrl(String url);
 
-    @Override <S extends Link> S save(S entity);
+    @Override
+    <S extends Link> S save(S entity);
 }

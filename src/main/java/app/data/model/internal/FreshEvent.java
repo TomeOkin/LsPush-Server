@@ -24,7 +24,8 @@ public class FreshEvent {
     public int event;
     public int colId;
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "FreshEvent{" +
             "event=" + event +
             ", colId=" + colId +

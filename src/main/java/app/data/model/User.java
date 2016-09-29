@@ -90,7 +90,8 @@ public class User implements Serializable {
         this.region = region;
     }
 
-    @JsonIgnore public String getPassword() {
+    @JsonIgnore
+    public String getPassword() {
         return password;
     }
 
@@ -150,7 +151,8 @@ public class User implements Serializable {
         return user;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "User{" +
             "uid='" + uid + '\'' +
             ", nickname='" + nickname + '\'' +
@@ -166,7 +168,8 @@ public class User implements Serializable {
             '}';
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -176,7 +179,8 @@ public class User implements Serializable {
 
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return uid.hashCode();
     }
 }

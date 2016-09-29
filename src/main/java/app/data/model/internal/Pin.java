@@ -54,7 +54,8 @@ public class Pin implements Serializable {
         this.user = user;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "Pin{" +
             "id=" + id +
             ", pins='" + pins + '\'' +
