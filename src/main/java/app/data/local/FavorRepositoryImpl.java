@@ -26,11 +26,11 @@ import org.springframework.stereotype.Component;
 
 @Component("favorRepository")
 public class FavorRepositoryImpl implements FavorRepository {
-    private final MongoTemplate mongoTemplate;
+    private final MongoTemplate mMongoTemplate;
 
     @Autowired
     public FavorRepositoryImpl(MongoTemplate mongoTemplate) {
-        this.mongoTemplate = mongoTemplate;
+        mMongoTemplate = mongoTemplate;
     }
 
     @Override public void addFavor(long colId, Favor.Data data) {
@@ -40,7 +40,7 @@ public class FavorRepositoryImpl implements FavorRepository {
         Update update = new Update();
         update.addToSet("dataList", data);
 
-        mongoTemplate.upsert(query, update, Favor.class);
+        mMongoTemplate.upsert(query, update, Favor.class);
     }
 
     @Override public void removeFavor(long colId, String uid) {
@@ -50,22 +50,22 @@ public class FavorRepositoryImpl implements FavorRepository {
 
         Update update = new Update();
         //update.unset("dataList.$");
-        //mongoTemplate.upsert(query, update, Favor.class);
+        //mMongoTemplate.upsert(query, update, Favor.class);
         // http://stackoverflow.com/questions/35600557/mongodb-how-using-spring-cryteria-remove-element-from-nested-object-array
         // http://ufasoli.blogspot.fr/2012/09/mongodb-spring-data-remove-elements.html?view=sidebar
         update.pull("dataList", new BasicDBObject("uid", uid));
-        mongoTemplate.updateMulti(query, update, Favor.class);
+        mMongoTemplate.updateMulti(query, update, Favor.class);
     }
 
     @Override public Favor findFavor(long colId) {
         Query query = new Query();
         query.addCriteria(Criteria.where("collectionId").is(colId));
 
-        return mongoTemplate.findOne(query, Favor.class);
+        return mMongoTemplate.findOne(query, Favor.class);
     }
 
     @Override public void dropAll() {
-        mongoTemplate.dropCollection(Favor.class);
+        mMongoTemplate.dropCollection(Favor.class);
     }
 
 }

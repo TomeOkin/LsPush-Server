@@ -36,7 +36,8 @@ public class Collection implements Serializable {
     @Column(name = "create_date") @Temporal(TemporalType.TIMESTAMP) private Date createDate;
     @Column(name = "update_date") @Temporal(TemporalType.TIMESTAMP) private Date updateDate;
 
-    @Transient private List<User> explorer; // uid, nickname, image
+    @Transient private List<String> tags;
+    @Transient private List<User> explorers; // uid, nickname, image
     @Transient private long favorCount;
 
     public Collection() {
@@ -105,12 +106,12 @@ public class Collection implements Serializable {
         this.updateDate = updateDate;
     }
 
-    public List<User> getExplorer() {
-        return explorer;
+    public List<User> getExplorers() {
+        return explorers;
     }
 
-    public void setExplorer(List<User> explorer) {
-        this.explorer = explorer;
+    public void setExplorers(List<User> explorers) {
+        this.explorers = explorers;
     }
 
     public long getFavorCount() {
@@ -119,6 +120,14 @@ public class Collection implements Serializable {
 
     public void setFavorCount(long favorCount) {
         this.favorCount = favorCount;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 
     @Override public boolean equals(Object o) {
@@ -143,7 +152,7 @@ public class Collection implements Serializable {
             ", image='" + image + '\'' +
             ", createDate=" + createDate +
             ", updateDate=" + updateDate +
-            ", explorer=" + explorer +
+            ", explorers=" + explorers +
             ", favorCount=" + favorCount +
             '}';
     }

@@ -33,12 +33,12 @@ import java.util.List;
 @RequestMapping("/api/collection")
 public class CollectionController {
     private final AuthService authService;
-    private final CollectionService collectionService;
+    private final CollectionService mColService;
 
     @Autowired
     public CollectionController(AuthService authService, CollectionService collectionService) {
         this.authService = authService;
-        this.collectionService = collectionService;
+        this.mColService = collectionService;
     }
 
     @PostMapping("/post")
@@ -49,25 +49,22 @@ public class CollectionController {
                 ResultCode.errorCode.get(ResultCode.USER_AUTH_FAILURE));
         }
 
-        collectionService.postCollection(uid, collection);
+        mColService.postCollection(uid, collection);
         return new BaseResponse();
     }
 
     @GetMapping("/get")
     public CollectionResponse getCollections(@RequestParam(value = "uid") String uid,
         @RequestParam(value = "page", defaultValue = "0", required = false) int page,
-        @RequestParam(value = "size", defaultValue = "20", required = false) int size,
-        @RequestParam(value = "order", defaultValue = "DESC", required = false) Sort.Direction direction,
-        @RequestParam(value = "sort", defaultValue = "update_date", required = false) String sortProperty) {
+        @RequestParam(value = "size", defaultValue = "20", required = false) int size) {
 
         if (StringUtils.isEmpty(uid) || !authService.isExistUser(uid)) {
             return new CollectionResponse(ResultCode.USER_AUTH_FAILURE,
                 ResultCode.errorCode.get(ResultCode.USER_AUTH_FAILURE), null);
         }
 
-        List<Collection> collectionList =
-            collectionService.findByUser(uid, page, size, new Sort(direction, sortProperty));
-        return new CollectionResponse(collectionList);
+        List<Collection> colList = mColService.findByUser(uid, page, size);
+        return new CollectionResponse(colList);
     }
 
     @GetMapping("/getByUrl")
@@ -78,7 +75,7 @@ public class CollectionController {
         @RequestParam(value = "sort", defaultValue = "updateDate", required = false) String sortProperty) {
 
         List<Collection> collectionList =
-            collectionService.findCollection(url, page, size, new Sort(direction, sortProperty));
+            mColService.findCollection(url, page, size, new Sort(direction, sortProperty));
         return new CollectionResponse(collectionList);
     }
 
@@ -86,7 +83,7 @@ public class CollectionController {
     public CollectionResponse getLatestCollections(
         @RequestParam(value = "page", defaultValue = "0", required = false) int page,
         @RequestParam(value = "size", defaultValue = "20", required = false) int size) {
-        List<Collection> colList = collectionService.getLatestCollection(page, size);
+        List<Collection> colList = mColService.getLatestCollection(page, size);
         return new CollectionResponse(colList);
     }
 }

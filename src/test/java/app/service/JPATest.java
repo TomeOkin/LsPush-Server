@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,11 +42,11 @@ import java.util.List;
 @SpringBootTest(classes = App.class)
 public class JPATest {
     private static final Logger logger = LoggerFactory.getLogger(JPATest.class);
-    @Autowired UserRepository userRepository;
-    @Autowired LinkRepository linkRepository;
-    @Autowired CollectionRepository collectionRepository;
-    @Autowired CollectionService collectionService;
-    @Autowired ObjectMapper objectMapper;
+    @Autowired UserRepository mUserRepo;
+    @Autowired LinkRepository mLinkRepo;
+    @Autowired CollectionRepository mColRepo;
+    @Autowired CollectionService mColService;
+    @Autowired ObjectMapper mObjectMapper;
 
     @Test
     @Transactional
@@ -58,22 +57,21 @@ public class JPATest {
         user.setEmail("123456@qq.com");
         user.setPassword("abc123456");
         user.setValidate(User.EMAIL_VALID);
-        userRepository.save(user);
+        mUserRepo.save(user);
 
         Link link = new Link("https://www.google.com", "Google");
-        linkRepository.save(link);
+        mLinkRepo.save(link);
 
         Collection collection = new Collection(user, link, "google search", "");
-        collectionRepository.save(collection);
-        Assert.assertEquals(1, collectionRepository.count());
+        mColRepo.save(collection);
+        Assert.assertEquals(1, mColRepo.count());
 
-        Page<Collection> collectionPage = collectionRepository.findByUser(user, new PageRequest(0, 1));
+        Page<Collection> collectionPage = mColRepo.findByUser(user, new PageRequest(0, 1));
         for (Collection col : collectionPage) {
             logger.info(col.toString());
         }
 
-        List<Collection> collections =
-            collectionService.findByUser(user.getUid(), 0, 1, new Sort(Sort.Direction.DESC, "createDate"));
+        List<Collection> collections = mColService.findByUser(user.getUid(), 0, 1);
         for (Collection col : collections) {
             logger.info(col.toString());
             Assert.assertNull(col.getUser());
@@ -83,20 +81,20 @@ public class JPATest {
         collection = collections.get(0);
         Assert.assertNotNull(collection);
         Assert.assertNotNull(collection.getId());
-        collectionRepository.delete(collection.getId());
-        //collectionRepository.removeByUserAndLink(collection.getUser(), collection.getLink());
+        mColRepo.delete(collection.getId());
+        //mColRepo.removeByUserAndLink(collection.getUser(), collection.getLink());
 
-        //collectionRepository.delete(1L);
-        //Assert.assertEquals(0, collectionRepository.count());
+        //mColRepo.delete(1L);
+        //Assert.assertEquals(0, mColRepo.count());
 
-        logger.info("collection count: {}", collectionRepository.count());
-        logger.info("user count: {}", userRepository.count());
-        logger.info("link: {}", linkRepository.count());
+        logger.info("collection count: {}", mColRepo.count());
+        logger.info("user count: {}", mUserRepo.count());
+        logger.info("link: {}", mLinkRepo.count());
 
-        user = userRepository.findOne("abcd");
+        user = mUserRepo.findOne("abcd");
         Assert.assertNotNull(user);
 
-        link = linkRepository.findFirstByUrl("https://www.google.com");
+        link = mLinkRepo.findFirstByUrl("https://www.google.com");
         Assert.assertNotNull(link);
     }
 
@@ -105,8 +103,8 @@ public class JPATest {
         Link link = new Link();
         link.setTitle("google");
         link.setUrl("https://www.google.com");
-        String json = objectMapper.writeValueAsString(link);
-        Link clone = objectMapper.readValue(json, Link.class);
+        String json = mObjectMapper.writeValueAsString(link);
+        Link clone = mObjectMapper.readValue(json, Link.class);
         logger.info(clone.toString());
         Assert.assertNotNull(clone.getUrlUnique());
     }

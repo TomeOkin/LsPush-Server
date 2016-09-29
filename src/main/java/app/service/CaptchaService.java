@@ -63,34 +63,35 @@ public class CaptchaService {
     private final String serverUrl;
     private final String serverEmail;
 
-    private final UserInfoValidator userInfoValidator;
-    private final JavaMailSender mailSender;
-    private final TemplateEngine templateEngine;
-    private final ObjectMapper objectMapper;
-    private final Cache<CaptchaRequest, Captcha> authCodeMap;
-    private BloomFilter<String> authCodeFilter;
-    private final Funnel<String> stringFunnel;
-    private final UserRepository userRepository;
+    private final UserInfoValidator mUserInfoValidator;
+    private final JavaMailSender mMailSender;
+    private final TemplateEngine mTemplateEngine;
+    private final UserRepository mUserRepo;
+
+    private final ObjectMapper mObjectMapper;
+    private final Cache<CaptchaRequest, Captcha> mAuthCodeMap;
+    private final Funnel<String> mStringFunnel;
+    private BloomFilter<String> mAuthCodeFilter;
 
     @Autowired
     public CaptchaService(UserInfoValidator userInfoValidator, LsPushProperties lsPushProperties,
         JavaMailSender mailSender, TemplateEngine templateEngine, ObjectMapper objectMapper,
-        UserRepository userRepository) {
-        this.userInfoValidator = userInfoValidator;
-        this.serverName = lsPushProperties.getServerName();
-        this.serverUrl = lsPushProperties.getServerUrl();
-        this.serverEmail = lsPushProperties.getServerEmail();
-        this.mailSender = mailSender;
-        this.templateEngine = templateEngine;
-        this.objectMapper = objectMapper;
-        this.userRepository = userRepository;
-        authCodeMap = CacheBuilder.newBuilder()
+        UserRepository userRepo) {
+        mUserInfoValidator = userInfoValidator;
+        serverName = lsPushProperties.getServerName();
+        serverUrl = lsPushProperties.getServerUrl();
+        serverEmail = lsPushProperties.getServerEmail();
+        mMailSender = mailSender;
+        mTemplateEngine = templateEngine;
+        mObjectMapper = objectMapper;
+        mUserRepo = userRepo;
+        mAuthCodeMap = CacheBuilder.newBuilder()
             .initialCapacity(100)
             .maximumSize(500)
             .expireAfterWrite(30, TimeUnit.MINUTES)
             .build();
 
-        stringFunnel = (Funnel<String>) (from, into) -> into.putString(from, StandardCharsets.UTF_8);
+        mStringFunnel = (Funnel<String>) (from, into) -> into.putString(from, StandardCharsets.UTF_8);
         resetBloomFilter();
     }
 
@@ -103,14 +104,14 @@ public class CaptchaService {
 
         boolean isValid;
         if (sendObject.contains("@")) {
-            isValid = userInfoValidator.isEmailValid(sendObject) && userRepository.findFirstByEmail(sendObject) == null;
+            isValid = mUserInfoValidator.isEmailValid(sendObject) && mUserRepo.findFirstByEmail(sendObject) == null;
         } else {
-            isValid = userInfoValidator.isPhoneValid(sendObject, request.getRegion());
+            isValid = mUserInfoValidator.isPhoneValid(sendObject, request.getRegion());
         }
         if (!isValid) {
             return INVALID_CAPTCHA;
         }
-        final Captcha found = authCodeMap.getIfPresent(request);
+        final Captcha found = mAuthCodeMap.getIfPresent(request);
         if (found != null) {
             // 如果两次发送间隔少于 1 分钟，就拒绝发送
             if (System.currentTimeMillis() - found.lastSentTime < 60_000) {
@@ -122,7 +123,7 @@ public class CaptchaService {
             Captcha captcha = new Captcha();
             captcha.authCode = generateCaptcha(6);
             captcha.lastSentTime = System.currentTimeMillis();
-            authCodeMap.put(request, captcha);
+            mAuthCodeMap.put(request, captcha);
 
             if (request.getSendObject().contains("@")) {
                 sendEmail(request.getSendObject(), captcha.authCode);
@@ -141,7 +142,7 @@ public class CaptchaService {
         RegisterData registerData;
         try {
             byte[] json = Crypto.decrypt(cryptToken);
-            registerData = objectMapper.readValue(json, RegisterData.class);
+            registerData = mObjectMapper.readValue(json, RegisterData.class);
         } catch (Exception e) {
             logger.warn("decrypt register-base check-captcha crypt-token failure", e);
             return INVALID_TOKEN;
@@ -162,20 +163,20 @@ public class CaptchaService {
         // phone captcha is not send by server,
         // when parse request success and satisfy follow conditions, assume it is correct
         if (!request.getSendObject().contains("@")
-            && userInfoValidator.isPhoneValid(request.getSendObject(), request.getRegion())
+            && mUserInfoValidator.isPhoneValid(request.getSendObject(), request.getRegion())
             && StringUtils.isNotEmpty(authCode)
             && authCode.length() >= 4
             && CharMatcher.DIGIT.negate().matchesNoneOf(authCode)) {
             return BaseResponse.COMMON_SUCCESS;
         }
 
-        Captcha found = authCodeMap.getIfPresent(request);
+        Captcha found = mAuthCodeMap.getIfPresent(request);
         if (found != null) {
             if (found.accessTimes < 3) {
                 if (found.authCode.equals(authCode)) {
                     if (successWithInvalidate) {
                         // when auth success, it will discards the key
-                        authCodeMap.invalidate(request);
+                        mAuthCodeMap.invalidate(request);
                     }
                     return BaseResponse.COMMON_SUCCESS;
                 } else {
@@ -185,7 +186,7 @@ public class CaptchaService {
             }
 
             // when auth failure beyond 3 times, you can only auth success until the key is invalidate.
-            authCodeMap.put(request, found); // refresh key alive
+            mAuthCodeMap.put(request, found); // refresh key alive
             return TRYING_TOO_MUCH;
         }
 
@@ -194,7 +195,7 @@ public class CaptchaService {
     }
 
     protected void sendEmail(String email, String authCode) throws MessagingException, UnsupportedEncodingException {
-        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessage mimeMessage = mMailSender.createMimeMessage();
 
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
         helper.setSubject("欢迎加入 LsPush 大家庭");
@@ -209,10 +210,10 @@ public class CaptchaService {
         ctx.setVariable("authCode", authCode);
         ctx.setVariable("authLink", authLink);
 
-        String html = templateEngine.process("lspush_captcha_email", ctx);
+        String html = mTemplateEngine.process("lspush_captcha_email", ctx);
 
         helper.setText(html, true);
-        mailSender.send(mimeMessage);
+        mMailSender.send(mimeMessage);
     }
 
     protected void sendSMS(String phone, String region, String authCode) {
@@ -221,7 +222,7 @@ public class CaptchaService {
 
     private void resetBloomFilter() {
         // 生成一个六位的数字字符串时，每 200 个独特的选择中只选择 1 个，一方面用于减少重复率，另一方面避免被推断出生成的数字
-        authCodeFilter = BloomFilter.create(stringFunnel, 5000, 0.01);
+        mAuthCodeFilter = BloomFilter.create(mStringFunnel, 5000, 0.01);
     }
 
     protected String generateCaptcha(int length) throws ExecutionException {
@@ -232,13 +233,13 @@ public class CaptchaService {
         String authCode;
         authCode = RandomStringUtils.random(length, false, true);
         // according to test, conflict is less than 45 per 10,000.
-        if (authCodeFilter.mightContain(authCode)) {
-            if (authCodeFilter.expectedFpp() >= 0.01f) { // has put too much (beyond 5000) into it
+        if (mAuthCodeFilter.mightContain(authCode)) {
+            if (mAuthCodeFilter.expectedFpp() >= 0.01f) { // has put too much (beyond 5000) into it
                 resetBloomFilter();
             }
             authCode = RandomStringUtils.random(length, false, true);
         }
-        authCodeFilter.put(authCode); // mask authCode
+        mAuthCodeFilter.put(authCode); // mask authCode
 
         return authCode;
     }

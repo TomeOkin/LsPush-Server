@@ -16,6 +16,7 @@
 package app.service;
 
 import app.data.local.CollectionRepository;
+import app.data.local.CollectionTagRepository;
 import app.data.local.FavorRepository;
 import app.data.local.LinkRepository;
 import app.data.model.*;
@@ -36,30 +37,30 @@ public class CollectionService {
     private final CollectionRepository mColRepo;
     private final LinkRepository mLinkRepo;
     private final FavorRepository mFavorRepo;
+    private final CollectionTagRepository mColTagRepo;
     private final Sort mCreateSort;
     private final Sort mLatestSort;
 
     @Autowired
-    public CollectionService(CollectionRepository colRepo, LinkRepository linkRepo, FavorRepository favorRepo) {
+    public CollectionService(CollectionRepository colRepo, LinkRepository linkRepo, FavorRepository favorRepo,
+        CollectionTagRepository colTagRepo) {
         mColRepo = colRepo;
         mLinkRepo = linkRepo;
         mFavorRepo = favorRepo;
+        mColTagRepo = colTagRepo;
         mCreateSort = new Sort(Sort.Direction.ASC, "createDate", "id");
         mLatestSort = new Sort(Sort.Direction.DESC, "updateDate", "id");
     }
 
-    public List<Collection> findByUser(String uid, int page, int size, Sort sort) {
-        // TODO: 2016/9/27
-        if (sort.getOrderFor("createDate") != null || sort.getOrderFor("updateDate") != null) {
-            if (sort.getOrderFor("id") == null) {
-                sort = sort.and(new Sort(Sort.Direction.DESC, "id"));
-            }
-        }
-
+    public List<Collection> findByUser(String uid, int page, int size) {
         User user = new User();
         user.setUid(uid);
         Page<Collection> colPage = mColRepo.findByUser(user, new PageRequest(page, size, mLatestSort));
         return getFromPage(colPage, false);
+    }
+
+    public Collection findByID(long id) {
+        return mColRepo.findOne(id);
     }
 
     public boolean isExistCollection(long id) {
@@ -68,6 +69,7 @@ public class CollectionService {
 
     @Transactional
     public void postCollection(String uid, Collection collection) {
+        // region: update collection
         User user = new User();
         user.setUid(uid);
         collection.setUser(user);
@@ -90,21 +92,30 @@ public class CollectionService {
         }
         collection.setUpdateDate(DateTime.now().toDate());
         mColRepo.save(collection);
-    }
+        // endregion
 
-    public Collection findByID(long id) {
-        return mColRepo.findOne(id);
+        // region: update collection tag
+        CollectionTag colTag = new CollectionTag(collection.getId(), collection.getTags());
+        mColTagRepo.update(colTag);
+        // endregion
     }
 
     public List<Collection> findCollection(String url, int page, int size, Sort sort) {
         Link link = mLinkRepo.findFirstByUrl(url);
         Page<Collection> colPage = mColRepo.findByLink(link, new PageRequest(page, size, sort));
-        return getFromPage(colPage, true);
+        List<Collection> collectionList = getFromPage(colPage, true);
+        fillCollection(collectionList);
+        return  collectionList;
     }
 
     public List<Collection> getLatestCollection(int page, int size) {
         Page<Collection> collectionPage = mColRepo.findAll(new PageRequest(page, size, mLatestSort));
         List<Collection> collectionList = getFromPage(collectionPage, true);
+        fillCollection(collectionList);
+        return collectionList;
+    }
+
+    private void fillCollection(List<Collection> collectionList) {
         for (Collection collection : collectionList) {
             // region: collection favor count
             Favor favor = mFavorRepo.findFavor(collection.getId());
@@ -114,7 +125,8 @@ public class CollectionService {
 
             // region: link explorers
             Link link = mLinkRepo.findFirstByUrl(collection.getLink().getUrl());
-            Page<Collection> linkCols = mColRepo.findByLink(link, new PageRequest(page, size, mCreateSort));
+            // 默认只提供前 5 个发现者
+            Page<Collection> linkCols = mColRepo.findByLink(link, new PageRequest(0, 5, mCreateSort));
             List<User> users = new ArrayList<>(linkCols.getContent().size());
             linkCols.forEach(col -> {
                 User user = col.getUser();
@@ -122,10 +134,15 @@ public class CollectionService {
                 user.setColId(col.getId());
                 users.add(user);
             });
-            collection.setExplorer(users);
+            collection.setExplorers(users);
+            // endregion
+
+            // region: collection tags
+            CollectionTag colTag = mColTagRepo.findByCollectionId(collection.getId());
+            List<String> tags = colTag != null ? colTag.getTags() : null;
+            collection.setTags(tags);
             // endregion
         }
-        return collectionList;
     }
 
     private List<Collection> getFromPage(Page<Collection> colPage, boolean withUser) {

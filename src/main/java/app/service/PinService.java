@@ -38,24 +38,24 @@ import java.util.List;
 
 @Service
 public class PinService {
-    private static final Logger logger = LoggerFactory.getLogger(PinService.class);
-    private final PinRepository pinRepository;
-    private final CollectionService collectionService;
-    private final ObjectMapper objectMapper;
     public static final int PIN_LIMIT = 5;
+    private static final Logger logger = LoggerFactory.getLogger(PinService.class);
+
+    private final PinRepository mPinRepo;
+    private final CollectionService mColService;
+    private final ObjectMapper mObjectMapper;
 
     @Autowired
-    public PinService(PinRepository pinRepository, CollectionService collectionService,
-        ObjectMapper objectMapper) {
-        this.pinRepository = pinRepository;
-        this.collectionService = collectionService;
-        this.objectMapper = objectMapper;
+    public PinService(PinRepository pinRepo, CollectionService colService, ObjectMapper objectMapper) {
+        mPinRepo = pinRepo;
+        mColService = colService;
+        mObjectMapper = objectMapper;
     }
 
     public int getPin(String uid, List<PinData> pinDatas) {
         User user = new User();
         user.setUid(uid);
-        Pin pin = pinRepository.findByUser(user);
+        Pin pin = mPinRepo.findByUser(user);
 
         if (pin == null || StringUtils.isEmpty(pin.getPins())) {
             return BaseResponse.COMMON_SUCCESS;
@@ -63,10 +63,10 @@ public class PinService {
 
         try {
             String pins = pin.getPins();
-            List<PinData> list = objectMapper.readValue(pins, new TypeReference<List<PinData>>() {});
+            List<PinData> list = mObjectMapper.readValue(pins, new TypeReference<List<PinData>>() {});
             for (PinData pinData : list) {
                 long colId = pinData.getCollection().getId();
-                pinData.setCollection(collectionService.findByID(colId));
+                pinData.setCollection(mColService.findByID(colId));
             }
             pinDatas.addAll(list);
         } catch (IOException e) {
@@ -85,13 +85,13 @@ public class PinService {
         // get old pin-data' id
         User user = new User();
         user.setUid(uid);
-        Pin old = pinRepository.findByUser(user);
+        Pin old = mPinRepo.findByUser(user);
 
         List<Long> ids = new ArrayList<>(5);
         if (old != null && !StringUtils.isEmpty(old.getPins())) {
             try {
                 String pins = old.getPins();
-                List<PinData> list = objectMapper.readValue(pins, new TypeReference<List<PinData>>() {});
+                List<PinData> list = mObjectMapper.readValue(pins, new TypeReference<List<PinData>>() {});
                 for (PinData pinData : list) {
                     long colId = pinData.getCollection().getId();
                     ids.add(colId);
@@ -105,7 +105,7 @@ public class PinService {
         // prepare new pin-data
         for (PinData pinData : pinDatas) {
             long id = pinData.getCollection().getId();
-            if (!collectionService.isExistCollection(id)) {
+            if (!mColService.isExistCollection(id)) {
                 return ResultCode.COLLECTION_NOT_EXIST;
             }
             Collection collection = new Collection();
@@ -119,14 +119,14 @@ public class PinService {
         }
 
         try {
-            String json = objectMapper.writeValueAsString(pinDatas);
+            String json = mObjectMapper.writeValueAsString(pinDatas);
             Pin pin = new Pin();
             pin.setUser(user);
             pin.setPins(json);
             if (old != null) {
                 pin.setId(old.getId());
             }
-            pinRepository.save(pin);
+            mPinRepo.save(pin);
         } catch (JsonProcessingException e) {
             logger.info("parse list-pinData -> string failure", e);
             return ResultCode.PARSE_PIN_DATA_FAILURE;

@@ -40,25 +40,25 @@ public class AuthService {
     private static final int REFRESH_TIME = 8; // days
 
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
-    private final ObjectMapper objectMapper;
-    private final CaptchaService captchaService;
-    private final UserInfoValidator userInfoValidator;
-    private final UserRepository userRepository;
-    private final Funnel<AccountSession> expireSessionFunnel;
-    private final Funnel<AccountSession> refreshSessionFunnel;
+    private final ObjectMapper mObjectMapper;
+    private final CaptchaService mCaptchaService;
+    private final UserInfoValidator mUserInfoValidator;
+    private final UserRepository mUserRepo;
+    private final Funnel<AccountSession> mExpireSessionFunnel;
+    private final Funnel<AccountSession> mRefreshSessionFunnel;
 
     @Autowired
-    public AuthService(ObjectMapper objectMapper, CaptchaService captchaService,
-        UserInfoValidator userInfoValidator, UserRepository userRepository) {
-        this.objectMapper = objectMapper;
-        this.captchaService = captchaService;
-        this.userInfoValidator = userInfoValidator;
-        this.userRepository = userRepository;
+    public AuthService(ObjectMapper objectMapper, CaptchaService captchaService, UserInfoValidator userInfoValidator,
+        UserRepository userRepo) {
+        mObjectMapper = objectMapper;
+        mCaptchaService = captchaService;
+        mUserInfoValidator = userInfoValidator;
+        mUserRepo = userRepo;
 
-        expireSessionFunnel =
+        mExpireSessionFunnel =
             (Funnel<AccountSession>) (from, into) -> into.putString(from.getUserId(), StandardCharsets.UTF_8)
                 .putLong(from.getExpireTime());
-        refreshSessionFunnel =
+        mRefreshSessionFunnel =
             (Funnel<AccountSession>) (from, into) -> into.putString(from.getUserId(), StandardCharsets.UTF_8)
                 .putLong(from.getRefreshTime());
     }
@@ -67,7 +67,7 @@ public class AuthService {
      * for take full advantage of cache, use findOne instead of exists
      */
     public boolean isExistUser(String uid) {
-        return userRepository.findOne(uid) != null;
+        return mUserRepo.findOne(uid) != null;
     }
 
     /**
@@ -77,7 +77,7 @@ public class AuthService {
         RegisterData registerData;
         try {
             byte[] json = Crypto.decrypt(cryptoToken);
-            registerData = objectMapper.readValue(json, RegisterData.class);
+            registerData = mObjectMapper.readValue(json, RegisterData.class);
         } catch (Exception e) {
             logger.warn("decrypt register crypt-token failure", e);
             return INVALID_TOKEN;
@@ -86,14 +86,14 @@ public class AuthService {
         // 如果用户验证码验证通过，而 uid 或者密码没有验证通过，验证码就会失效，为了避免这个问题
         // 同时保证验证码先验证，使用预验证方式，不清除验证码
         CaptchaRequest captchaRequest = registerData.getCaptchaRequest();
-        int result = captchaService.checkCaptcha(captchaRequest, registerData.getAuthCode(), false);
+        int result = mCaptchaService.checkCaptcha(captchaRequest, registerData.getAuthCode(), false);
         if (result != BaseResponse.COMMON_SUCCESS) {
             return result;
         }
 
         // check user info
-        boolean check = userInfoValidator.checkUserId(registerData.getUserId());
-        check = check && userInfoValidator.checkPasswordStrengthBaseline(registerData.getPassword());
+        boolean check = mUserInfoValidator.checkUserId(registerData.getUserId());
+        check = check && mUserInfoValidator.checkPasswordStrengthBaseline(registerData.getPassword());
         if (!check) {
             return ILLEGAL_ACCOUNT_INFO;
         }
@@ -117,14 +117,14 @@ public class AuthService {
         user.setPassword(registerData.getPassword());
         user.setImage(registerData.getImage());
         try {
-            userRepository.save(user);
+            mUserRepo.save(user);
         } catch (Exception e) {
             logger.warn("update user info failure", e);
             return UPDATE_USER_INFO_FAILURE;
         }
 
         // 在服务器端已经将数据记录到数据库后，不关心结果地清除验证码记录
-        captchaService.checkCaptcha(captchaRequest, registerData.getAuthCode());
+        mCaptchaService.checkCaptcha(captchaRequest, registerData.getAuthCode());
 
         accessResponse.setUser(user.cloneSelfPublic());
         return refreshAccessResponse(registerData.getUserId(), accessResponse);
@@ -137,21 +137,21 @@ public class AuthService {
         LoginData loginData;
         try {
             byte[] json = Crypto.decrypt(cryptoToken);
-            loginData = objectMapper.readValue(json, LoginData.class);
+            loginData = mObjectMapper.readValue(json, LoginData.class);
         } catch (Exception e) {
             logger.warn("decrypt register crypt-token failure", e);
             return INVALID_TOKEN;
         }
 
-        boolean check = userInfoValidator.checkUserId(loginData.getUid())
-            && userInfoValidator.checkPasswordStrengthBaseline(loginData.getPassword());
+        boolean check = mUserInfoValidator.checkUserId(loginData.getUid())
+            && mUserInfoValidator.checkPasswordStrengthBaseline(loginData.getPassword());
         if (!check) {
             return ILLEGAL_ACCOUNT_INFO;
         }
 
         User user;
         try {
-            user = userRepository.findOne(loginData.getUid());
+            user = mUserRepo.findOne(loginData.getUid());
             check = user != null && loginData.getUid().equals(user.getUid()) && loginData.getPassword()
                 .equals(user.getPassword());
             if (!check) {
@@ -227,7 +227,7 @@ public class AuthService {
         RefreshData refreshData;
         try {
             byte[] json = Crypto.decrypt(cryptoToken);
-            refreshData = objectMapper.readValue(json, RefreshData.class);
+            refreshData = mObjectMapper.readValue(json, RefreshData.class);
         } catch (Exception e) {
             logger.warn("decrypt refresh crypt-token failure", e);
             return INVALID_TOKEN;
@@ -269,13 +269,13 @@ public class AuthService {
     }
 
     protected CryptoToken newSessionToken(AccountSession session, boolean isExpire) {
-        Funnel<AccountSession> sessionFunnel = isExpire ? expireSessionFunnel : refreshSessionFunnel;
+        Funnel<AccountSession> sessionFunnel = isExpire ? mExpireSessionFunnel : mRefreshSessionFunnel;
         byte[] data = Hashing.sipHash24().hashObject(session, sessionFunnel).asBytes();
         String sessionString = new String(data, Charset.forName("UTF-8"));
         session.setSession(sessionString);
         CryptoToken token;
         try {
-            byte[] sessionData = objectMapper.writeValueAsBytes(session);
+            byte[] sessionData = mObjectMapper.writeValueAsBytes(session);
             token = Crypto.encrypt(sessionData);
         } catch (Exception e) {
             logger.warn("encrypt session failure", e);
@@ -285,11 +285,11 @@ public class AuthService {
     }
 
     protected AccountSession getSessionWithCheck(CryptoToken cryptoToken, boolean isExpire) {
-        Funnel<AccountSession> sessionFunnel = isExpire ? expireSessionFunnel : refreshSessionFunnel;
+        Funnel<AccountSession> sessionFunnel = isExpire ? mExpireSessionFunnel : mRefreshSessionFunnel;
         AccountSession session;
         try {
             byte[] json = Crypto.decrypt(cryptoToken);
-            session = objectMapper.readValue(json, AccountSession.class);
+            session = mObjectMapper.readValue(json, AccountSession.class);
         } catch (Exception e) {
             logger.warn("decrypt token failure", e);
             return null;

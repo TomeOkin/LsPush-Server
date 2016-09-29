@@ -28,10 +28,10 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class FetchService {
     private static final Logger logger = LoggerFactory.getLogger(FetchService.class);
-    private final Cache<String, WebPageInfo> urlInfoCache;
+    private final Cache<String, WebPageInfo> mUrlInfoCache;
 
     public FetchService() {
-        urlInfoCache = CacheBuilder.newBuilder()
+        mUrlInfoCache = CacheBuilder.newBuilder()
             .initialCapacity(100)
             .maximumSize(500)
             .expireAfterWrite(2, TimeUnit.HOURS)
@@ -40,7 +40,7 @@ public class FetchService {
 
     public WebPageInfo getUrlInfo(String url) {
         try {
-            return WebPageUtil.parse(url, urlInfoCache);
+            return WebPageUtil.parse(url, mUrlInfoCache);
         } catch (Exception e) {
             logger.warn("get url info false", e);
         }

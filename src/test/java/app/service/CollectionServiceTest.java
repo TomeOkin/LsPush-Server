@@ -16,12 +16,10 @@
 package app.service;
 
 import app.App;
+import app.data.local.CollectionTagRepository;
 import app.data.local.FavorRepository;
 import app.data.local.UserRepository;
-import app.data.model.Collection;
-import app.data.model.Favor;
-import app.data.model.Link;
-import app.data.model.User;
+import app.data.model.*;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,18 +29,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = App.class)
 public class CollectionServiceTest {
     private static final Logger logger = LoggerFactory.getLogger(CollectionServiceTest.class);
-    @Autowired CollectionService colService;
-    @Autowired UserRepository userRepository;
-    @Autowired FavorRepository favorRepository;
+    @Autowired CollectionService mColService;
+    @Autowired UserRepository mUserRepo;
+    @Autowired FavorRepository mFavorRepo;
+    @Autowired CollectionTagRepository mColTagRepo;
 
     private User one;
     private User two;
@@ -55,7 +54,7 @@ public class CollectionServiceTest {
         one.setEmail("123456@qq.com");
         one.setPassword("abc123456");
         one.setValidate(User.EMAIL_VALID);
-        userRepository.save(one);
+        mUserRepo.save(one);
 
         two = new User();
         two.setUid("two");
@@ -63,23 +62,23 @@ public class CollectionServiceTest {
         two.setPhone("1310890");
         two.setPassword("pwd123456");
         two.setValidate(User.PHONE_VALID);
-        userRepository.save(two);
+        mUserRepo.save(two);
     }
 
     @Test
     public void collectionTest() {
         Link link = new Link("https://www.google.com", "Google");
         Collection googleCol = new Collection(one, link, "google search", "");
-        colService.postCollection(one.getUid(), googleCol);
+        mColService.postCollection(one.getUid(), googleCol);
 
         link = new Link("https://www.baidu.com", "Baidu");
         Collection baiduCol = new Collection(one, link, "baidu search", "");
-        colService.postCollection(one.getUid(), baiduCol);
+        mColService.postCollection(one.getUid(), baiduCol);
 
         baiduCol = new Collection(one, link, "Baidu Search", "");
-        colService.postCollection(two.getUid(), baiduCol);
+        mColService.postCollection(two.getUid(), baiduCol);
 
-        List<Collection> cols = colService.findByUser(one.getUid(), 0, 5, new Sort(Sort.Direction.DESC, "updateDate"));
+        List<Collection> cols = mColService.findByUser(one.getUid(), 0, 5);
         Assert.assertNotNull(cols);
 
         Collection col = cols.get(0);
@@ -91,21 +90,46 @@ public class CollectionServiceTest {
         Favor.Data data = new Favor.Data();
         data.date = DateTime.now().toDate();
         data.uid = one.getUid();
-        favorRepository.addFavor(colId, data);
-        favorRepository.addFavor(colId, data);
+        mFavorRepo.addFavor(colId, data);
+        mFavorRepo.addFavor(colId, data);
 
         // prepare favor
         data = new Favor.Data();
         data.date = DateTime.now().toDate();
         data.uid = two.getUid();
-        favorRepository.addFavor(colId, data);
+        mFavorRepo.addFavor(colId, data);
 
         // getLatestCollection
-        List<Collection> latestCols = colService.getLatestCollection(0, 5);
+        List<Collection> latestCols = mColService.getLatestCollection(0, 5);
         for (Collection item : latestCols) {
             logger.info(item.toString());
         }
 
-        favorRepository.removeFavor(colId, one.getUid());
+        mFavorRepo.removeFavor(colId, one.getUid());
+    }
+
+    @Test
+    public void testCollectionTag() {
+        mColTagRepo.dropAll();
+
+        CollectionTag colTag = new CollectionTag(101, Arrays.asList("test", "hello"));
+        mColTagRepo.update(colTag);
+        colTag = new CollectionTag(102, Arrays.asList("abc", "hello"));
+        mColTagRepo.update(colTag);
+
+        colTag = mColTagRepo.findByCollectionId(101);
+        Assert.assertNotNull(colTag);
+        logger.info(colTag.toString());
+
+        colTag = mColTagRepo.findByCollectionId(102);
+        Assert.assertNotNull(colTag);
+        logger.info(colTag.toString());
+
+        List<CollectionTag> colTags = mColTagRepo.findByTags(Arrays.asList("hello"));
+        Assert.assertNotNull(colTags);
+        Assert.assertEquals("colTags count is", 2, colTags.size());
+        for (CollectionTag tag : colTags) {
+            logger.info(tag.toString());
+        }
     }
 }
