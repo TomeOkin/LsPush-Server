@@ -127,6 +127,7 @@ public class CollectionService {
             col.setTags(item.getTags());
             // set explorers
             fillExplorers(col);
+
             colList.add(col);
         }
         return colList;

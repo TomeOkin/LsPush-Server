@@ -112,7 +112,7 @@ public class CollectionServiceTest {
             logger.info(item.toString());
         }
 
-        List<CollectionBinding> uidFavors = mColBindingRepo.findByUid(one.getUid());
+        List<CollectionBinding> uidFavors = mColBindingRepo.findByUid(one.getUid(), null);
         Assert.assertNotNull(uidFavors);
         logger.info("User Favors: ");
         for (CollectionBinding item : uidFavors) {

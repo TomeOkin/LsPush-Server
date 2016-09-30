@@ -33,7 +33,7 @@ public interface CollectionBindingRepository {
     CollectionBinding findByCollectionId(long colId);
 
     @Nullable
-    List<CollectionBinding> findByUid(String uid);
+    List<CollectionBinding> findByUid(String uid, @Nullable Pageable pageable);
 
     @Nullable
     List<CollectionBinding> findByTags(List<String> tags, @Nullable Pageable pageable);

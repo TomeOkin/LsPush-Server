@@ -86,11 +86,10 @@ public class CollectionBindingRepositoryImpl implements CollectionBindingReposit
 
     @Nullable
     @Override
-    public List<CollectionBinding> findByUid(String uid) {
+    public List<CollectionBinding> findByUid(String uid, @Nullable Pageable pageable) {
         Query query = new Query();
-        query.addCriteria(Criteria.where("favors").elemMatch(Criteria.where("uid").is(uid)));
+        query.addCriteria(Criteria.where("favors").elemMatch(Criteria.where("uid").is(uid))).with(pageable);
 
-        // TODO: 2016/9/29 add a test
         return mMongoTemplate.find(query, CollectionBinding.class);
     }
 
@@ -99,6 +98,19 @@ public class CollectionBindingRepositoryImpl implements CollectionBindingReposit
     public List<CollectionBinding> findByTags(List<String> tags, @Nullable Pageable pageable) {
         Query query = new Query();
         query.addCriteria(Criteria.where("tags").in(tags)).with(pageable);
+
+        // such as [{$project: {key:"$key", count: {$size: {$ifNull: ["$value",[]]}}}}, {$sort: {"count":1}}]
+        // FIXME: 2016/9/30 [block] waiting for spring-data-mongodb 1.10 release
+        // https://github.com/spring-projects/spring-data-mongodb/blob/eb1392cc1a0fcf25aa9e636863d36e6fee73e632/src/main/asciidoc/new-features.adoc
+        // due to $ifNull
+//        List<AggregationOperation> operations = new ArrayList<>();
+//        operations.add(Aggregation.match(Criteria.where("tags").in(tags)));
+//        operations.add(Aggregation.project().and("favors").size().as("favors_count"));
+//        if (pageable != null) {
+//            operations.add(Aggregation.skip(pageable.getOffset()));
+//            operations.add(Aggregation.limit(pageable.getPageSize()));
+//        }
+//        Aggregation aggregation = Aggregation.newAggregation(operations);
 
         return mMongoTemplate.find(query, CollectionBinding.class);
     }

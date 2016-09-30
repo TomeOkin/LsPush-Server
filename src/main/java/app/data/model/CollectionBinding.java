@@ -27,9 +27,6 @@ public class CollectionBinding {
     private List<CollectionBinding.Data> favors;
     private List<String> tags;
 
-    public CollectionBinding() {
-    }
-
     public long getCollectionId() {
         return collectionId;
     }

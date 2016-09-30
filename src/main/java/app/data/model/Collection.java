@@ -40,8 +40,7 @@ public class Collection implements Serializable {
     @Transient private List<User> explorers; // uid, nickname, image
     @Transient private long favorCount;
 
-    public Collection() {
-    }
+    public Collection() {}
 
     public Collection(User user, Link link, String description, String image) {
         this.user = user;
