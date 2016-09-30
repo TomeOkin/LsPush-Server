@@ -43,7 +43,6 @@ public class UserController {
         this.authService = authService;
     }
 
-    //    @Autowired RedisTemplate<String, Collection> template;
     @Autowired JmsTemplate jmsTemplate;
 
     @GetMapping("")
@@ -52,8 +51,6 @@ public class UserController {
         event.event = FreshEvent.EVENT_COLLECTION;
         event.colId = 101;
         jmsTemplate.convertAndSend(FreshService.DESTINATION, event);
-        //        logger.info("send collection");
-        //        template.convertAndSend("collection", new Collection(null, null, "hello", null));
         return "hello person!";
     }
 

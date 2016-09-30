@@ -15,9 +15,8 @@
  */
 package app.service;
 
+import app.data.local.CollectionBindingRepository;
 import app.data.local.CollectionRepository;
-import app.data.local.CollectionTagRepository;
-import app.data.local.FavorRepository;
 import app.data.local.LinkRepository;
 import app.data.model.*;
 import org.apache.commons.lang3.StringUtils;
@@ -36,18 +35,16 @@ import java.util.List;
 public class CollectionService {
     private final CollectionRepository mColRepo;
     private final LinkRepository mLinkRepo;
-    private final FavorRepository mFavorRepo;
-    private final CollectionTagRepository mColTagRepo;
+    private final CollectionBindingRepository mColBindingRepo;
     private final Sort mCreateSort;
     private final Sort mLatestSort;
 
     @Autowired
-    public CollectionService(CollectionRepository colRepo, LinkRepository linkRepo, FavorRepository favorRepo,
-        CollectionTagRepository colTagRepo) {
+    public CollectionService(CollectionRepository colRepo, LinkRepository linkRepo,
+        CollectionBindingRepository colBindingRepo) {
         mColRepo = colRepo;
         mLinkRepo = linkRepo;
-        mFavorRepo = favorRepo;
-        mColTagRepo = colTagRepo;
+        mColBindingRepo = colBindingRepo;
         mCreateSort = new Sort(Sort.Direction.ASC, "createDate", "id");
         mLatestSort = new Sort(Sort.Direction.DESC, "updateDate", "id");
     }
@@ -88,8 +85,7 @@ public class CollectionService {
         // endregion
 
         // region: update collection tag
-        CollectionTag colTag = new CollectionTag(col.getId(), col.getTags());
-        mColTagRepo.update(colTag);
+        mColBindingRepo.updateTags(col.getId(), col.getTags());
         // endregion
     }
 
@@ -110,7 +106,7 @@ public class CollectionService {
         return colList;
     }
 
-    public List<Collection> getLatestCollection(int page, int size) {
+    public List<Collection> getLatestCollections(int page, int size) {
         Page<Collection> colPage = mColRepo.findAll(new PageRequest(page, size, mLatestSort));
         List<Collection> colList = getFromPage(colPage, true);
         colList.forEach(this::fillCollection);
@@ -118,24 +114,42 @@ public class CollectionService {
     }
 
     public List<Collection> findByTags(List<String> tags, int page, int size) {
-        List<CollectionTag> colTags = mColTagRepo.findByTags(tags, new PageRequest(page, size));
-        List<Collection> colList = new ArrayList<>(colTags.size());
-        for (CollectionTag colTag : colTags) {
-            Collection col = mColRepo.findOne(colTag.getCollectionId());
-            fillCollection(col);
+        List<CollectionBinding> colBindings = mColBindingRepo.findByTags(tags, new PageRequest(page, size));
+        if (colBindings == null) {
+            return null;
+        }
+        List<Collection> colList = new ArrayList<>(colBindings.size());
+        for (CollectionBinding item : colBindings) {
+            Collection col = mColRepo.findOne(item.getCollectionId());
+            // set favor count and tags
+            final long count = item.getFavors() != null ? item.getFavors().size() : 0;
+            col.setFavorCount(count);
+            col.setTags(item.getTags());
+            // set explorers
+            fillExplorers(col);
             colList.add(col);
         }
         return colList;
     }
 
     private void fillCollection(Collection col) {
-        // region: collection favor count
-        Favor favor = mFavorRepo.findById(col.getId());
-        final long count = favor != null && favor.dataList != null ? favor.dataList.size() : 0;
-        col.setFavorCount(count);
-        // endregion
+        fillBinding(col);
+        fillExplorers(col);
+    }
 
-        // region: link explorers
+    private void fillBinding(Collection col) {
+        CollectionBinding colBinding = mColBindingRepo.findByCollectionId(col.getId());
+        if (colBinding == null) {
+            col.setFavorCount(0);
+            col.setTags(null);
+        } else {
+            final long count = colBinding.getFavors() != null ? colBinding.getFavors().size() : 0;
+            col.setFavorCount(count);
+            col.setTags(colBinding.getTags());
+        }
+    }
+
+    private void fillExplorers(Collection col) {
         Link link = mLinkRepo.findFirstByUrl(col.getLink().getUrl());
         // 默认只提供前 5 个发现者
         Page<Collection> linkCols = mColRepo.findByLink(link, new PageRequest(0, 5, mCreateSort));
@@ -147,13 +161,6 @@ public class CollectionService {
             users.add(user);
         });
         col.setExplorers(users);
-        // endregion
-
-        // region: collection tags
-        CollectionTag colTag = mColTagRepo.findByCollectionId(col.getId());
-        List<String> tags = colTag != null ? colTag.getTags() : null;
-        col.setTags(tags);
-        // endregion
     }
 
     private List<Collection> getFromPage(Page<Collection> colPage, boolean withUser) {

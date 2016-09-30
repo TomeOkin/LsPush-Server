@@ -18,19 +18,16 @@ package app.data.model;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.Id;
+import java.util.Date;
 import java.util.List;
 
 @Document
-public class CollectionTag {
+public class CollectionBinding {
     @Id private long collectionId;
+    private List<CollectionBinding.Data> favors;
     private List<String> tags;
 
-    public CollectionTag() {
-    }
-
-    public CollectionTag(long collectionId, List<String> tags) {
-        this.collectionId = collectionId;
-        this.tags = tags;
+    public CollectionBinding() {
     }
 
     public long getCollectionId() {
@@ -39,6 +36,14 @@ public class CollectionTag {
 
     public void setCollectionId(long collectionId) {
         this.collectionId = collectionId;
+    }
+
+    public List<CollectionBinding.Data> getFavors() {
+        return favors;
+    }
+
+    public void setFavors(List<CollectionBinding.Data> favors) {
+        this.favors = favors;
     }
 
     public List<String> getTags() {
@@ -51,9 +56,23 @@ public class CollectionTag {
 
     @Override
     public String toString() {
-        return "CollectionTag{" +
+        return "CollectionBinding{" +
             "collectionId=" + collectionId +
+            ", favors=" + favors +
             ", tags=" + tags +
             '}';
+    }
+
+    public static class Data {
+        @Id public String uid;
+        public Date date;
+
+        @Override
+        public String toString() {
+            return "Data{" +
+                "uid='" + uid + '\'' +
+                ", date=" + date +
+                '}';
+        }
     }
 }

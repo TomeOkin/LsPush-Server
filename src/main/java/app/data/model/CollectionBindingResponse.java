@@ -15,23 +15,23 @@
  */
 package app.data.model;
 
-public class FavorResponse extends BaseResponse {
-    private Favor favor;
+public class CollectionBindingResponse extends BaseResponse {
+    private CollectionBinding colBinding;
 
-    public FavorResponse(Favor favor) {
-        this.favor = favor;
+    public CollectionBindingResponse(CollectionBinding favor) {
+        this.colBinding = favor;
     }
 
-    public FavorResponse(int resultCode, String result, Favor favor) {
+    public CollectionBindingResponse(int resultCode, String result, CollectionBinding favor) {
         super(resultCode, result);
-        this.favor = favor;
+        this.colBinding = favor;
     }
 
-    public Favor getFavor() {
-        return favor;
+    public CollectionBinding getCollectionBinding() {
+        return colBinding;
     }
 
-    public void setFavor(Favor favor) {
-        this.favor = favor;
+    public void setCollectionBinding(CollectionBinding favor) {
+        this.colBinding = favor;
     }
 }

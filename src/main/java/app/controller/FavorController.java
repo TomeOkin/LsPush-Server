@@ -16,11 +16,11 @@
 package app.controller;
 
 import app.config.ResultCode;
-import app.data.local.FavorRepository;
+import app.data.local.CollectionBindingRepository;
 import app.data.model.BaseResponse;
+import app.data.model.CollectionBinding;
+import app.data.model.CollectionBindingResponse;
 import app.data.model.CryptoToken;
-import app.data.model.Favor;
-import app.data.model.FavorResponse;
 import app.service.AuthService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,33 +29,33 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/favor")
 public class FavorController {
-    private final AuthService authService;
-    private final FavorRepository favorRepository;
+    private final AuthService mAuthService;
+    private final CollectionBindingRepository mColBindingRepo;
 
     @Autowired
-    public FavorController(AuthService authService, FavorRepository favorRepository) {
-        this.authService = authService;
-        this.favorRepository = favorRepository;
+    public FavorController(AuthService authService, CollectionBindingRepository colBindingRepo) {
+        mAuthService = authService;
+        mColBindingRepo = colBindingRepo;
     }
 
     @GetMapping("/get")
-    public FavorResponse getFavor(@RequestParam(value = "colId") long colId) {
-        Favor favor = favorRepository.findById(colId);
-        return new FavorResponse(favor);
+    public CollectionBindingResponse getFavor(@RequestParam(value = "colId") long colId) {
+        CollectionBinding colBinding = mColBindingRepo.findByCollectionId(colId);
+        return new CollectionBindingResponse(colBinding);
     }
 
     @PostMapping("/set")
-    public BaseResponse setFavor(@RequestHeader CryptoToken token, @RequestBody Favor favor) {
-        String uid = authService.checkIfAuthBind(token);
+    public BaseResponse setFavor(@RequestHeader CryptoToken token, @RequestBody CollectionBinding colBinding) {
+        String uid = mAuthService.checkIfAuthBind(token);
         if (StringUtils.isEmpty(uid)) {
             return new BaseResponse(ResultCode.USER_AUTH_FAILURE,
                 ResultCode.errorCode.get(ResultCode.USER_AUTH_FAILURE));
         }
 
-        if (favor == null || favor.dataList == null || favor.dataList.size() != 1) {
+        if (colBinding == null || colBinding.getFavors() == null || colBinding.getFavors().size() != 1) {
             return new BaseResponse(ResultCode.ARGUMENT_ERROR, ResultCode.errorCode.get(ResultCode.ARGUMENT_ERROR));
         }
-        favorRepository.add(favor.collectionId, favor.dataList.get(0));
+        mColBindingRepo.addFavor(colBinding.getCollectionId(), colBinding.getFavors().get(0));
         return new BaseResponse();
     }
 }

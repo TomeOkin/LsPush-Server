@@ -15,20 +15,28 @@
  */
 package app.data.local;
 
-import app.data.model.CollectionTag;
+import app.data.model.CollectionBinding;
 import org.springframework.data.domain.Pageable;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public interface CollectionTagRepository {
-    void update(CollectionTag colTag);
+public interface CollectionBindingRepository {
+    void addFavor(long colId, @Nonnull CollectionBinding.Data data);
+
+    void removeFavor(long colId, String uid);
+
+    void updateTags(long colId, @Nullable List<String> tags);
 
     @Nullable
-    CollectionTag findByCollectionId(long colId);
+    CollectionBinding findByCollectionId(long colId);
 
     @Nullable
-    List<CollectionTag> findByTags(List<String> tags, @Nullable Pageable pageable);
+    List<CollectionBinding> findByUid(String uid);
+
+    @Nullable
+    List<CollectionBinding> findByTags(List<String> tags, @Nullable Pageable pageable);
 
     void dropAll();
 }

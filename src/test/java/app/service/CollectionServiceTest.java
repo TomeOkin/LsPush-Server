@@ -16,10 +16,12 @@
 package app.service;
 
 import app.App;
-import app.data.local.CollectionTagRepository;
-import app.data.local.FavorRepository;
+import app.data.local.CollectionBindingRepository;
 import app.data.local.UserRepository;
-import app.data.model.*;
+import app.data.model.Collection;
+import app.data.model.CollectionBinding;
+import app.data.model.Link;
+import app.data.model.User;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
@@ -40,14 +42,15 @@ public class CollectionServiceTest {
     private static final Logger logger = LoggerFactory.getLogger(CollectionServiceTest.class);
     @Autowired CollectionService mColService;
     @Autowired UserRepository mUserRepo;
-    @Autowired FavorRepository mFavorRepo;
-    @Autowired CollectionTagRepository mColTagRepo;
+    @Autowired CollectionBindingRepository mColBindingRepo;
 
     private User one;
     private User two;
 
     @Before
     public void initUser() {
+        mUserRepo.deleteAll();
+
         one = new User();
         one.setUid("one");
         one.setNickname("One");
@@ -67,6 +70,8 @@ public class CollectionServiceTest {
 
     @Test
     public void collectionTest() {
+        mColBindingRepo.dropAll();
+
         Link link = new Link("https://www.google.com", "Google");
         Collection googleCol = new Collection(one, link, "google search", "");
         mColService.postCollection(one.getUid(), googleCol);
@@ -87,48 +92,55 @@ public class CollectionServiceTest {
 
         long colId = col.getId();
 
-        Favor.Data data = new Favor.Data();
+        CollectionBinding.Data data = new CollectionBinding.Data();
         data.date = DateTime.now().toDate();
         data.uid = one.getUid();
-        mFavorRepo.add(colId, data);
-        mFavorRepo.add(colId, data);
+        mColBindingRepo.addFavor(colId, data);
+        mColBindingRepo.addFavor(colId, data);
 
         // prepare favor
-        data = new Favor.Data();
+        data = new CollectionBinding.Data();
         data.date = DateTime.now().toDate();
         data.uid = two.getUid();
-        mFavorRepo.add(colId, data);
+        mColBindingRepo.addFavor(colId, data);
 
-        // getLatestCollection
-        List<Collection> latestCols = mColService.getLatestCollection(0, 5);
+        // getLatestCollections
+        List<Collection> latestCols = mColService.getLatestCollections(0, 5);
+        Assert.assertNotNull(latestCols);
+        logger.info("Latest Collections: ");
         for (Collection item : latestCols) {
             logger.info(item.toString());
         }
 
-        mFavorRepo.remove(colId, one.getUid());
+        List<CollectionBinding> uidFavors = mColBindingRepo.findByUid(one.getUid());
+        Assert.assertNotNull(uidFavors);
+        logger.info("User Favors: ");
+        for (CollectionBinding item : uidFavors) {
+            logger.info(item.toString());
+        }
+
+        mColBindingRepo.removeFavor(colId, one.getUid());
     }
 
     @Test
     public void testCollectionTag() {
-        mColTagRepo.dropAll();
+        mColBindingRepo.dropAll();
 
-        CollectionTag colTag = new CollectionTag(101, Arrays.asList("test", "hello"));
-        mColTagRepo.update(colTag);
-        colTag = new CollectionTag(102, Arrays.asList("abc", "hello"));
-        mColTagRepo.update(colTag);
+        mColBindingRepo.updateTags(101, Arrays.asList("test", "hello"));
+        mColBindingRepo.updateTags(102, Arrays.asList("abc", "hello"));
 
-        colTag = mColTagRepo.findByCollectionId(101);
+        CollectionBinding colTag = mColBindingRepo.findByCollectionId(101);
         Assert.assertNotNull(colTag);
         logger.info(colTag.toString());
 
-        colTag = mColTagRepo.findByCollectionId(102);
+        colTag = mColBindingRepo.findByCollectionId(102);
         Assert.assertNotNull(colTag);
         logger.info(colTag.toString());
 
-        List<CollectionTag> colTags = mColTagRepo.findByTags(Arrays.asList("hello"), null);
+        List<CollectionBinding> colTags = mColBindingRepo.findByTags(Arrays.asList("hello"), null);
         Assert.assertNotNull(colTags);
         Assert.assertEquals("colTags count is", 2, colTags.size());
-        for (CollectionTag tag : colTags) {
+        for (CollectionBinding tag : colTags) {
             logger.info(tag.toString());
         }
     }

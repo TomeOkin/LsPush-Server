@@ -82,7 +82,7 @@ public class CollectionController {
     public CollectionResponse getLatestCollections(
         @RequestParam(value = "page", defaultValue = "0", required = false) int page,
         @RequestParam(value = "size", defaultValue = "20", required = false) int size) {
-        List<Collection> colList = mColService.getLatestCollection(page, size);
+        List<Collection> colList = mColService.getLatestCollections(page, size);
         return new CollectionResponse(colList);
     }
 

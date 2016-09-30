@@ -18,7 +18,6 @@ package app;
 import app.config.LsPushProperties;
 import app.config.RedisObjectSerializer;
 import app.data.crypt.Crypto;
-import app.data.local.FavorRepository;
 import app.data.model.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,13 +100,6 @@ public class App {
         SpringApplication.run(App.class, args);
     }
 
-    @Autowired FavorRepository favorRepository;
-
-    @PostConstruct
-    public void initFavor() {
-        favorRepository.dropAll();
-    }
-
     // 初始化配置
     @Autowired LsPushProperties lsPushProperties;
 
@@ -120,11 +112,15 @@ public class App {
         }
     }
 
-    //    // 目前处于测试阶段，启动服务器时先清空数据库
-    //    @Autowired RedisConnectionFactory factory;
-    //
-    //    @PostConstruct
-    //    public void flushDb() {
-    //        factory.getConnection().flushDb();
-    //    }
+//    // 目前处于测试阶段，启动服务器时先清空数据库
+//    @Autowired RedisConnectionFactory factory;
+//    @Autowired FavorRepository favorRepo;
+//    @Autowired CollectionTagRepository colTagRepo;
+//
+//    @PostConstruct
+//    public void flushDb() {
+//        factory.getConnection().flushDb();
+//        favorRepo.dropAll();
+//        colTagRepo.dropAll();
+//    }
 }
