@@ -68,7 +68,7 @@ dependencies {
     }
     compile "org.thymeleaf:thymeleaf-spring4:3.0.2.RELEASE"
     compile "org.thymeleaf:thymeleaf:3.0.2.RELEASE"
-    compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.0.3"
+    compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.0.4"
 
     // redis
     compile ("org.springframework.boot:spring-boot-starter-data-redis") {
@@ -83,7 +83,7 @@ dependencies {
     compile ("org.springframework.boot:spring-boot-starter-activemq") {
         exclude group: 'org.apache.activemq', module:'activemq-broker'
     }
-    compile "org.apache.activemq:activemq-broker:5.14.0"
+    compile "org.apache.activemq:activemq-broker:5.14.1"
 
     // annotations support
     compile "com.google.code.findbugs:jsr305:3.0.1"

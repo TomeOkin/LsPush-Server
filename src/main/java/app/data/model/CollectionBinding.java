@@ -18,11 +18,14 @@ package app.data.model;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.Id;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 @Document
-public class CollectionBinding {
+public class CollectionBinding implements Serializable {
+    private static final long serialVersionUID = 1814208429279250834L;
+
     @Id private long collectionId;
     private List<CollectionBinding.Data> favors;
     private List<String> tags;

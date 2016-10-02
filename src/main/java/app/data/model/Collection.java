@@ -39,6 +39,7 @@ public class Collection implements Serializable {
     @Transient private List<String> tags;
     @Transient private List<User> explorers; // uid, nickname, image
     @Transient private long favorCount;
+    @Transient private boolean hasFavor;
 
     public Collection() {}
 
@@ -105,6 +106,14 @@ public class Collection implements Serializable {
         this.updateDate = updateDate;
     }
 
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
     public List<User> getExplorers() {
         return explorers;
     }
@@ -121,12 +130,12 @@ public class Collection implements Serializable {
         this.favorCount = favorCount;
     }
 
-    public List<String> getTags() {
-        return tags;
+    public boolean isHasFavor() {
+        return hasFavor;
     }
 
-    public void setTags(List<String> tags) {
-        this.tags = tags;
+    public void setHasFavor(boolean hasFavor) {
+        this.hasFavor = hasFavor;
     }
 
     @Override
@@ -154,8 +163,10 @@ public class Collection implements Serializable {
             ", image='" + image + '\'' +
             ", createDate=" + createDate +
             ", updateDate=" + updateDate +
+            ", tags=" + tags +
             ", explorers=" + explorers +
             ", favorCount=" + favorCount +
+            ", hasFavor=" + hasFavor +
             '}';
     }
 }

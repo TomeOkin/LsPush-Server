@@ -105,7 +105,7 @@ public class CollectionServiceTest {
         mColBindingRepo.addFavor(colId, data);
 
         // getLatestCollections
-        List<Collection> latestCols = mColService.getLatestCollections(0, 5);
+        List<Collection> latestCols = mColService.getLatestCollections(one.getUid() ,0, 5);
         Assert.assertNotNull(latestCols);
         logger.info("Latest Collections: ");
         for (Collection item : latestCols) {

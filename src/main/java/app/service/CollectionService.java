@@ -18,7 +18,10 @@ package app.service;
 import app.data.local.CollectionBindingRepository;
 import app.data.local.CollectionRepository;
 import app.data.local.LinkRepository;
-import app.data.model.*;
+import app.data.model.Collection;
+import app.data.model.CollectionBinding;
+import app.data.model.Link;
+import app.data.model.User;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,36 +88,44 @@ public class CollectionService {
         mColRepo.save(col);
         // endregion
 
-        // region: update collection tag
+        // region: update collection binding
         mColBindingRepo.updateTags(col.getId(), col.getTags());
+        CollectionBinding.Data favor = new CollectionBinding.Data();
+        favor.uid = uid;
+        favor.date = DateTime.now().toDate();
+        mColBindingRepo.addFavor(col.getId(), favor);
         // endregion
     }
 
     public List<Collection> findByUser(String uid, int page, int size) {
+        if (StringUtils.isEmpty(uid)) {
+            return null;
+        }
+
         User user = new User();
         user.setUid(uid);
         Page<Collection> colPage = mColRepo.findByUser(user, new PageRequest(page, size, mLatestSort));
         List<Collection> colList = getFromPage(colPage, false);
-        colList.forEach(this::fillCollection);
+        colList.forEach(collection -> fillCollection(collection, uid, true));
         return colList;
     }
 
-    public List<Collection> findByUrl(String url, int page, int size, Sort sort) {
+    public List<Collection> findByUrl(@Nullable String uid, String url, int page, int size, Sort sort) {
         Link link = mLinkRepo.findFirstByUrl(url);
         Page<Collection> colPage = mColRepo.findByLink(link, new PageRequest(page, size, sort));
         List<Collection> colList = getFromPage(colPage, true);
-        colList.forEach(this::fillCollection);
+        colList.forEach(collection -> fillCollection(collection, uid, false));
         return colList;
     }
 
-    public List<Collection> getLatestCollections(int page, int size) {
+    public List<Collection> getLatestCollections(String uid, int page, int size) {
         Page<Collection> colPage = mColRepo.findAll(new PageRequest(page, size, mLatestSort));
         List<Collection> colList = getFromPage(colPage, true);
-        colList.forEach(this::fillCollection);
+        colList.forEach(collection -> fillCollection(collection, uid, false));
         return colList;
     }
 
-    public List<Collection> findByTags(List<String> tags, int page, int size) {
+    public List<Collection> findByTags(String uid, List<String> tags, int page, int size) {
         List<CollectionBinding> colBindings = mColBindingRepo.findByTags(tags, new PageRequest(page, size));
         if (colBindings == null) {
             return null;
@@ -124,6 +136,7 @@ public class CollectionService {
             // set favor count and tags
             final long count = item.getFavors() != null ? item.getFavors().size() : 0;
             col.setFavorCount(count);
+            col.setHasFavor(hasFavor(uid, item.getFavors()));
             col.setTags(item.getTags());
             // set explorers
             fillExplorers(col);
@@ -133,21 +146,38 @@ public class CollectionService {
         return colList;
     }
 
-    private void fillCollection(Collection col) {
-        fillBinding(col);
+    private void fillCollection(Collection col, @Nullable String uid, boolean hasFavor) {
+        fillBinding(col, uid, hasFavor);
         fillExplorers(col);
     }
 
-    private void fillBinding(Collection col) {
+    @SuppressWarnings("ConstantConditions")
+    private void fillBinding(Collection col, @Nullable String uid, boolean hasFavor) {
         CollectionBinding colBinding = mColBindingRepo.findByCollectionId(col.getId());
-        if (colBinding == null) {
+        final List<CollectionBinding.Data> favors = colBinding == null ? null : colBinding.getFavors();
+        if (favors == null) {
             col.setFavorCount(0);
+            col.setHasFavor(false);
             col.setTags(null);
         } else {
-            final long count = colBinding.getFavors() != null ? colBinding.getFavors().size() : 0;
-            col.setFavorCount(count);
-            col.setTags(colBinding.getTags());
+            col.setFavorCount(favors.size());
+            final boolean favor = hasFavor || hasFavor(uid, favors);
+            col.setHasFavor(favor);
+            col.setTags(colBinding == null ? null : colBinding.getTags());
         }
+    }
+
+    private boolean hasFavor(String uid, List<CollectionBinding.Data> favors) {
+        if (favors == null || StringUtils.isEmpty(uid)) {
+            return false;
+        }
+
+        for (CollectionBinding.Data item : favors) {
+            if (item.uid.equals(uid)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void fillExplorers(Collection col) {

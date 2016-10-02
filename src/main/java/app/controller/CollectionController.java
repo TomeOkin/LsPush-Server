@@ -68,23 +68,24 @@ public class CollectionController {
     }
 
     @GetMapping("/getByUrl")
-    public CollectionResponse getCollectionsFromLink(@RequestParam(value = "url") String url,
+    public CollectionResponse getCollectionsFromLink(
+        @RequestParam(value = "url") String url,
         @RequestParam(value = "page", defaultValue = "0", required = false) int page,
         @RequestParam(value = "size", defaultValue = "20", required = false) int size,
         @RequestParam(value = "order", defaultValue = "DESC", required = false) Sort.Direction direction,
-        @RequestParam(value = "sort", defaultValue = "updateDate", required = false) String sortProperty) {
+        @RequestParam(value = "sort", defaultValue = "updateDate", required = false) String sortProperty,
+        @RequestParam(value = "uid", defaultValue = "", required = false) String uid) {
 
-        List<Collection> colList = mColService.findByUrl(url, page, size, new Sort(direction, sortProperty));
+        List<Collection> colList = mColService.findByUrl(uid, url, page, size, new Sort(direction, sortProperty));
         return new CollectionResponse(colList);
     }
 
     @GetMapping("/getLatest")
     public CollectionResponse getLatestCollections(
         @RequestParam(value = "page", defaultValue = "0", required = false) int page,
-        @RequestParam(value = "size", defaultValue = "20", required = false) int size) {
-        List<Collection> colList = mColService.getLatestCollections(page, size);
+        @RequestParam(value = "size", defaultValue = "20", required = false) int size,
+        @RequestParam(value = "uid", defaultValue = "", required = false) String uid) {
+        List<Collection> colList = mColService.getLatestCollections(uid, page, size);
         return new CollectionResponse(colList);
     }
-
-
 }
