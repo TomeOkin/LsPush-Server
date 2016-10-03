@@ -17,14 +17,12 @@ package app.service;
 
 import app.App;
 import app.data.local.CollectionBindingRepository;
-import app.data.local.UserRepository;
 import app.data.model.Collection;
 import app.data.model.CollectionBinding;
 import app.data.model.Link;
 import app.data.model.User;
 import org.joda.time.DateTime;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -41,31 +39,17 @@ import java.util.List;
 public class CollectionServiceTest {
     private static final Logger logger = LoggerFactory.getLogger(CollectionServiceTest.class);
     @Autowired CollectionService mColService;
-    @Autowired UserRepository mUserRepo;
     @Autowired CollectionBindingRepository mColBindingRepo;
 
-    private User one;
-    private User two;
+    private static final User one;
+    private static final User two;
 
-    @Before
-    public void initUser() {
-        mUserRepo.deleteAll();
-
+    static {
         one = new User();
         one.setUid("one");
-        one.setNickname("One");
-        one.setEmail("123456@qq.com");
-        one.setPassword("abc123456");
-        one.setValidate(User.EMAIL_VALID);
-        mUserRepo.save(one);
 
         two = new User();
         two.setUid("two");
-        two.setNickname("Two");
-        two.setPhone("1310890");
-        two.setPassword("pwd123456");
-        two.setValidate(User.PHONE_VALID);
-        mUserRepo.save(two);
     }
 
     @Test
@@ -73,10 +57,12 @@ public class CollectionServiceTest {
         mColBindingRepo.dropAll();
 
         Link link = new Link("https://www.google.com", "Google");
+        logger.info(link.toString());
         Collection googleCol = new Collection(one, link, "google search", "");
         mColService.postCollection(one.getUid(), googleCol);
 
         link = new Link("https://www.baidu.com", "Baidu");
+        logger.info(link.toString());
         Collection baiduCol = new Collection(one, link, "baidu search", "");
         mColService.postCollection(one.getUid(), baiduCol);
 
