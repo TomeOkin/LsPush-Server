@@ -17,9 +17,12 @@ package app.data.local;
 
 import app.data.model.CollectionBinding;
 import com.mongodb.BasicDBObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.IfNullOperator;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -31,6 +34,7 @@ import java.util.List;
 
 @Component("CollectionBindingRepository")
 public class CollectionBindingRepositoryImpl implements CollectionBindingRepository {
+    private static final Logger logger = LoggerFactory.getLogger(CollectionBindingRepositoryImpl.class);
     private final MongoTemplate mMongoTemplate;
 
     @Autowired
@@ -98,21 +102,44 @@ public class CollectionBindingRepositoryImpl implements CollectionBindingReposit
     public List<CollectionBinding> findByTags(List<String> tags, @Nullable Pageable pageable) {
         Query query = new Query();
         query.addCriteria(Criteria.where("tags").in(tags)).with(pageable);
+        return mMongoTemplate.find(query, CollectionBinding.class);
 
-        // such as [{$project: {key:"$key", count: {$size: {$ifNull: ["$value",[]]}}}}, {$sort: {"count":1}}]
-        // FIXME: 2016/9/30 [block] waiting for spring-data-mongodb 1.10 release
-        // https://github.com/spring-projects/spring-data-mongodb/blob/eb1392cc1a0fcf25aa9e636863d36e6fee73e632/src/main/asciidoc/new-features.adoc
-        // due to $ifNull
+//        // such as [{$project: {key:"$key", count: {$size: {$ifNull: ["$value",[]]}}}}, {$sort: {"count":1}}]
+//        // FIXME: 2016/9/30 [block] waiting for spring-data-mongodb 1.10 release
+//        // https://github.com/spring-projects/spring-data-mongodb/blob/eb1392cc1a0fcf25aa9e636863d36e6fee73e632/src/main/asciidoc/new-features.adoc
+//        // due to $ifNull
 //        List<AggregationOperation> operations = new ArrayList<>();
 //        operations.add(Aggregation.match(Criteria.where("tags").in(tags)));
-//        operations.add(Aggregation.project().and("favors").size().as("favors_count"));
+//
+//        String op = "{ $project : { \"collectionId\" : \"$collectionId\" , \"favorsCount\" : { $size : { \"$ifNull\" : [\"$favors\", []]}}}}";
+//        // but the result will be modify to ...{ "$ifNull" : [ "$favors" , { }]}...
+//        DBObject dbObject = BasicDBObject.parse(op);
+//        operations.add(new CommonAggregationOperation(dbObject));
+////        operations.add(Aggregation.project("collectionId")
+////            .and(ifNull("favors", new ArrayList<CollectionBinding.Data>())).size().as("favorsCount"));
+//        //operations.add(Aggregation.sort(Sort.Direction.DESC, "favorsCount"));
 //        if (pageable != null) {
 //            operations.add(Aggregation.skip(pageable.getOffset()));
 //            operations.add(Aggregation.limit(pageable.getPageSize()));
 //        }
-//        Aggregation aggregation = Aggregation.newAggregation(operations);
+//        TypedAggregation<CollectionBinding> aggregation = Aggregation.newAggregation(CollectionBinding.class, operations);
+//        logger.info(aggregation.toString());
+////        Aggregation aggregation = Aggregation.newAggregation(operations);
+//        AggregationResults<CollectionBindingTemp> results =
+//            mMongoTemplate.aggregate(aggregation, CollectionBindingTemp.class);
+//        List<CollectionBindingTemp> tempList = results.getMappedResults();
+//
+//        List<CollectionBinding> colBindings = new ArrayList<>(tempList.size());
+//        for (CollectionBindingTemp item : tempList) {
+//            CollectionBinding colBinding = findByCollectionId(item.getCollectionId());
+//            // colBinding is non-null
+//            colBindings.add(colBinding);
+//        }
+//        return colBindings;
+    }
 
-        return mMongoTemplate.find(query, CollectionBinding.class);
+    public static IfNullOperator ifNull(String field, Object replacement) {
+        return IfNullOperator.newBuilder().ifNull(field).thenReplaceWith(replacement);
     }
 
     @Override

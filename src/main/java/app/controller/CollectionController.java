@@ -68,7 +68,7 @@ public class CollectionController {
     }
 
     @GetMapping("/getByUrl")
-    public CollectionResponse getCollectionsFromLink(
+    public CollectionResponse getCollectionsByUrl(
         @RequestParam(value = "url") String url,
         @RequestParam(value = "page", defaultValue = "0", required = false) int page,
         @RequestParam(value = "size", defaultValue = "20", required = false) int size,
@@ -77,6 +77,17 @@ public class CollectionController {
         @RequestParam(value = "uid", defaultValue = "", required = false) String uid) {
 
         List<Collection> colList = mColService.findByUrl(uid, url, page, size, new Sort(direction, sortProperty));
+        return new CollectionResponse(colList);
+    }
+
+    @GetMapping("/getByTags")
+    public CollectionResponse getCollectionsByTags(
+        @RequestParam(value = "tags") List<String> tags,
+        @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+        @RequestParam(value = "size", defaultValue = "20", required = false) int size,
+        @RequestParam(value = "uid", defaultValue = "", required = false) String uid) {
+
+        List<Collection> colList = mColService.findByTags(uid, tags, page, size);
         return new CollectionResponse(colList);
     }
 
