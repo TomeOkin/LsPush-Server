@@ -22,11 +22,15 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 
 public class WebPageUtil {
+    private static final Logger logger = LoggerFactory.getLogger(WebPageUtil.class);
+
     // http://www.atool.org/useragent.php
     public static final String GOOGLE_USER_AGENT =
         "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36";
@@ -37,8 +41,9 @@ public class WebPageUtil {
         String original = url;
 
         // hit toutiao.io
-        if (original.startsWith("http://toutiao.io/posts/")) {
-            original = original.replace("/posts/", "/j/");
+        // fixme http://toutiao.io/shares/640539/url
+        if (original.startsWith("https://toutiao.io/posts/")) {
+            original = original.replace("/posts/", "/k/");
         }
 
         // check cache
@@ -51,7 +56,7 @@ public class WebPageUtil {
         }
 
         // attach url
-        Document doc = Jsoup.connect(info.url).userAgent(GOOGLE_USER_AGENT).get();
+        Document doc = Jsoup.connect(info.url).userAgent(GOOGLE_USER_AGENT).validateTLSCertificates(false).get();
         info.url = doc.baseUri(); // or doc.location()
 
         // hit gold.xitu.io
@@ -118,6 +123,10 @@ public class WebPageUtil {
     }
 
     public static String smartLink(String old) {
+        if (old.contains("http://mp.weixin.qq.com/")) {
+            return old;
+        }
+
         String url = old;
         int query = url.lastIndexOf('?');
         if (query != -1) {

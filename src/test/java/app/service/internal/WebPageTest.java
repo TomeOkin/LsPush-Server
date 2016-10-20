@@ -24,8 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(JUnit4.class)
-public class WebPageMain {
-    private static final Logger logger = LoggerFactory.getLogger(WebPageMain.class);
+public class WebPageTest {
+    private static final Logger logger = LoggerFactory.getLogger(WebPageTest.class);
 
     @Test
     public void test() throws Exception {
@@ -35,11 +35,15 @@ public class WebPageMain {
         logger.info(info.toString());
         info = WebPageUtil.parse("http://gold.xitu.io/entry/57cf7e4bbf22ec005f8ad230", null);
         logger.info(info.toString());
-        info = WebPageUtil.parse("http://toutiao.io/posts/m0oht1", null);
+        info = WebPageUtil.parse("https://toutiao.io/posts/m0oht1", null); // https://toutiao.io/posts/m0oht1
         logger.info(info.toString());
         info =
             WebPageUtil.parse("http://yaq.qq.com/blog/10?hmsr=toutiao.io&utm_medium=toutiao.io&utm_source=toutiao.io",
                 null);
+        logger.info(info.toString());
+        info = WebPageUtil.parse(
+            "http://mp.weixin.qq.com/s?__biz=MzA3NzMxODEyMQ==&mid=2666453399&idx=3&sn=c6f3455acbee1a8a2ea88f7212ed2632&chksm=8449ab11b33e2207154f8f0d5ac275864bdded7780e0f02a4a257a073e6bcee456f45de9eab3&scene=0#wechat_redirect",
+            null);
         logger.info(info.toString());
     }
 }
