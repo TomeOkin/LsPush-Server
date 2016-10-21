@@ -56,7 +56,8 @@ public class PinController {
     }
 
     @PostMapping("/post")
-    public BaseResponse updatePinData(@RequestHeader CryptoToken token, @RequestBody PinRequest request) {
+    public BaseResponse updatePinData(@RequestHeader(value = "token") CryptoToken token,
+        @RequestBody PinRequest request) {
         String uid = authService.checkIfAuthBind(token);
         if (StringUtils.isEmpty(uid)) {
             return new BaseResponse(ResultCode.USER_AUTH_FAILURE,

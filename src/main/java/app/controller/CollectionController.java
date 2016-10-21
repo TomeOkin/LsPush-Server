@@ -42,7 +42,7 @@ public class CollectionController {
     }
 
     @PostMapping("/post")
-    public BaseResponse postCollection(@RequestHeader CryptoToken token, @RequestBody Collection col) {
+    public BaseResponse postCollection(@RequestHeader(value = "token") CryptoToken token, @RequestBody Collection col) {
         String uid = mAuthService.checkIfAuthBind(token);
         if (StringUtils.isEmpty(uid)) {
             return new BaseResponse(ResultCode.USER_AUTH_FAILURE,

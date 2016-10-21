@@ -45,7 +45,7 @@ public class FavorController {
     }
 
     @PostMapping("/remove")
-    public BaseResponse removeFavor(@RequestHeader CryptoToken token, @RequestParam(value = "colId") long colId) {
+    public BaseResponse removeFavor(@RequestHeader(value = "token") CryptoToken token, @RequestBody long colId) {
         String uid = mAuthService.checkIfAuthBind(token);
         if (StringUtils.isEmpty(uid)) {
             return new BaseResponse(ResultCode.USER_AUTH_FAILURE,
@@ -57,7 +57,8 @@ public class FavorController {
     }
 
     @PostMapping("/set")
-    public BaseResponse setFavor(@RequestHeader CryptoToken token, @RequestBody CollectionBinding colBinding) {
+    public BaseResponse setFavor(@RequestHeader(value = "token") CryptoToken token,
+        @RequestBody CollectionBinding colBinding) {
         String uid = mAuthService.checkIfAuthBind(token);
         if (StringUtils.isEmpty(uid)) {
             return new BaseResponse(ResultCode.USER_AUTH_FAILURE,

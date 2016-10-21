@@ -24,6 +24,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -70,7 +71,7 @@ public class WebPageUtil {
             info.url = doc.baseUri(); // or doc.location()
         }
 
-        info.url = smartLink(info.url);
+        info.url = smartUri(info.url);
 
         // get title
         Elements metaTitle = doc.select("meta[property=og:title]");
@@ -122,21 +123,35 @@ public class WebPageUtil {
         return info;
     }
 
-    public static String smartLink(String old) {
-        if (old.contains("http://mp.weixin.qq.com/")) {
-            return old;
-        }
+//    public static String smartLink(String old) {
+//        if (old.contains("http://mp.weixin.qq.com/")) {
+//            return old;
+//        }
+//
+//        String url = old;
+//        int query = url.lastIndexOf('?');
+//        if (query != -1) {
+//            url = url.substring(0, query);
+//        }
+//        query = url.lastIndexOf('#');
+//        if (query != -1) {
+//            url = url.substring(0, query);
+//        }
+//
+//        logger.info("smartUri: {}", smartUri(old));
+//        return url;
+//    }
 
-        String url = old;
-        int query = url.lastIndexOf('?');
-        if (query != -1) {
-            url = url.substring(0, query);
-        }
-        query = url.lastIndexOf('#');
-        if (query != -1) {
-            url = url.substring(0, query);
-        }
-        return url;
+    public static String smartUri(String old) {
+        return UriComponentsBuilder.fromUriString(old)
+            .replaceQueryParam("utm_source")
+            .replaceQueryParam("utm_medium")
+            .replaceQueryParam("utm_campaign")
+            .replaceQueryParam("utm_term")
+            .replaceQueryParam("utm_content")
+            .replaceQueryParam("hmsr")
+            .build()
+            .toUriString();
     }
 
     /**
