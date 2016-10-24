@@ -16,7 +16,10 @@
 package app.controller;
 
 import app.config.ResultCode;
-import app.data.model.*;
+import app.data.model.BaseResponse;
+import app.data.model.PinData;
+import app.data.model.PinRequest;
+import app.data.model.PinResponse;
 import app.service.AuthService;
 import app.service.PinService;
 import org.apache.commons.lang3.StringUtils;
@@ -56,8 +59,7 @@ public class PinController {
     }
 
     @PostMapping("/post")
-    public BaseResponse updatePinData(@RequestHeader(value = "token") CryptoToken token,
-        @RequestBody PinRequest request) {
+    public BaseResponse updatePinData(@RequestHeader(value = "token") String token, @RequestBody PinRequest request) {
         String uid = authService.checkIfAuthBind(token);
         if (StringUtils.isEmpty(uid)) {
             return new BaseResponse(ResultCode.USER_AUTH_FAILURE,

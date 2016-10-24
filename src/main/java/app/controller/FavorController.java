@@ -20,7 +20,6 @@ import app.data.local.CollectionBindingRepository;
 import app.data.model.BaseResponse;
 import app.data.model.CollectionBinding;
 import app.data.model.CollectionBindingResponse;
-import app.data.model.CryptoToken;
 import app.service.AuthService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +44,7 @@ public class FavorController {
     }
 
     @PostMapping("/remove")
-    public BaseResponse removeFavor(@RequestHeader(value = "token") CryptoToken token, @RequestBody long colId) {
+    public BaseResponse removeFavor(@RequestHeader(value = "token") String token, @RequestBody long colId) {
         String uid = mAuthService.checkIfAuthBind(token);
         if (StringUtils.isEmpty(uid)) {
             return new BaseResponse(ResultCode.USER_AUTH_FAILURE,
@@ -57,7 +56,7 @@ public class FavorController {
     }
 
     @PostMapping("/set")
-    public BaseResponse setFavor(@RequestHeader(value = "token") CryptoToken token,
+    public BaseResponse setFavor(@RequestHeader(value = "token") String token,
         @RequestBody CollectionBinding colBinding) {
         String uid = mAuthService.checkIfAuthBind(token);
         if (StringUtils.isEmpty(uid)) {

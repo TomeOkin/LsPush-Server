@@ -197,6 +197,16 @@ public class AuthService {
         return null;
     }
 
+    public String checkIfAuthBind(String token) {
+        try {
+            CryptoToken cryptoToken = mObjectMapper.readValue(token, CryptoToken.class);
+            return checkIfAuthBind(cryptoToken);
+        } catch (Exception e) {
+            logger.warn("check auth bind failure", e);
+            return null;
+        }
+    }
+
     public int refreshExpireToken(CryptoToken cryptoToken, AccessResponse accessResponse) {
         AccountSession refreshSession = getSessionWithCheck(cryptoToken, false);
         if (refreshSession == null) {

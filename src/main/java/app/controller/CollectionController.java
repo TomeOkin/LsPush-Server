@@ -19,7 +19,6 @@ import app.config.ResultCode;
 import app.data.model.BaseResponse;
 import app.data.model.Collection;
 import app.data.model.CollectionResponse;
-import app.data.model.CryptoToken;
 import app.service.AuthService;
 import app.service.CollectionService;
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +41,7 @@ public class CollectionController {
     }
 
     @PostMapping("/post")
-    public BaseResponse postCollection(@RequestHeader(value = "token") CryptoToken token, @RequestBody Collection col) {
+    public BaseResponse postCollection(@RequestHeader(value = "token") String token, @RequestBody Collection col) {
         String uid = mAuthService.checkIfAuthBind(token);
         if (StringUtils.isEmpty(uid)) {
             return new BaseResponse(ResultCode.USER_AUTH_FAILURE,
