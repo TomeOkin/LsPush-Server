@@ -31,7 +31,7 @@ public class Collection implements Serializable {
     private Link link;
 
     private String description;
-    private String image;
+    private Image image;
 
     @Column(name = "create_date") @Temporal(TemporalType.TIMESTAMP) private Date createDate;
     @Column(name = "update_date") @Temporal(TemporalType.TIMESTAMP) private Date updateDate;
@@ -43,7 +43,7 @@ public class Collection implements Serializable {
 
     public Collection() {}
 
-    public Collection(User user, Link link, String description, String image) {
+    public Collection(User user, Link link, String description, Image image) {
         this.user = user;
         this.link = link;
         this.description = description;
@@ -82,11 +82,11 @@ public class Collection implements Serializable {
         this.description = description;
     }
 
-    public String getImage() {
+    public Image getImage() {
         return image;
     }
 
-    public void setImage(String image) {
+    public void setImage(Image image) {
         this.image = image;
     }
 
@@ -160,7 +160,7 @@ public class Collection implements Serializable {
             ", user=" + user +
             ", link=" + link +
             ", description='" + description + '\'' +
-            ", image='" + image + '\'' +
+            ", image=" + image +
             ", createDate=" + createDate +
             ", updateDate=" + updateDate +
             ", tags=" + tags +

@@ -17,10 +17,7 @@ package app.service;
 
 import app.App;
 import app.data.local.UserRepository;
-import app.data.model.Collection;
-import app.data.model.Link;
-import app.data.model.PinData;
-import app.data.model.User;
+import app.data.model.*;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
@@ -55,12 +52,12 @@ public class PinServiceTest {
         List<PinData> pinDatas = new ArrayList<>();
 
         Link link = new Link("https://www.google.com", "Google");
-        Collection collection = new Collection(user, link, "google search", "");
+        Collection collection = new Collection(user, link, "google search", new Image());
         collectionService.postCollection(user.getUid(), collection);
         pinDatas.add(new PinData(collection, DateTime.now().toDate()));
 
         link = new Link("https://www.baidu.com", "Baidu");
-        collection = new Collection(user, link, "baidu search", "");
+        collection = new Collection(user, link, "baidu search", new Image());
         collectionService.postCollection(user.getUid(), collection);
         pinDatas.add(new PinData(collection, DateTime.now().toDate()));
 

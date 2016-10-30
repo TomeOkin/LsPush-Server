@@ -20,6 +20,7 @@ import app.data.local.CollectionRepository;
 import app.data.local.LinkRepository;
 import app.data.local.UserRepository;
 import app.data.model.Collection;
+import app.data.model.Image;
 import app.data.model.Link;
 import app.data.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,7 +63,7 @@ public class JPATest {
         Link link = new Link("https://www.google.com", "Google");
         mLinkRepo.save(link);
 
-        Collection collection = new Collection(user, link, "google search", "");
+        Collection collection = new Collection(user, link, "google search", new Image());
         mColRepo.save(collection);
         Assert.assertEquals(1, mColRepo.count());
 

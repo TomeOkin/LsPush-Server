@@ -166,7 +166,7 @@ public class CaptchaService {
             && mUserInfoValidator.isPhoneValid(request.getSendObject(), request.getRegion())
             && StringUtils.isNotEmpty(authCode)
             && authCode.length() >= 4
-            && CharMatcher.DIGIT.negate().matchesNoneOf(authCode)) {
+            && CharMatcher.digit().negate().matchesNoneOf(authCode)) {
             return BaseResponse.COMMON_SUCCESS;
         }
 

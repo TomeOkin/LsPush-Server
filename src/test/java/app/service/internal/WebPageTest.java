@@ -45,5 +45,8 @@ public class WebPageTest {
             "http://mp.weixin.qq.com/s?__biz=MzA3NzMxODEyMQ==&mid=2666453399&idx=3&sn=c6f3455acbee1a8a2ea88f7212ed2632&chksm=8449ab11b33e2207154f8f0d5ac275864bdded7780e0f02a4a257a073e6bcee456f45de9eab3&scene=0#wechat_redirect",
             null);
         logger.info(info.toString());
+        // https://github.com/Tencent/tinker
+        info = WebPageUtil.parse("https://github.com/Tencent/tinker", null);
+        logger.info(info.toString());
     }
 }

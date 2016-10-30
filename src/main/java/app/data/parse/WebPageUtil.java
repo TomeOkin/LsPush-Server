@@ -57,7 +57,7 @@ public class WebPageUtil {
         }
 
         // attach url
-        Document doc = Jsoup.connect(info.url).userAgent(GOOGLE_USER_AGENT).validateTLSCertificates(false).get();
+        Document doc = requestUrl(info.url);
         info.url = doc.baseUri(); // or doc.location()
 
         // hit gold.xitu.io
@@ -67,7 +67,7 @@ public class WebPageUtil {
             info.url = originLink.attr("href");
 
             // reconnect
-            doc = Jsoup.connect(info.url).userAgent(GOOGLE_USER_AGENT).get();
+            doc = requestUrl(info.url);
             info.url = doc.baseUri(); // or doc.location()
         }
 
@@ -123,24 +123,28 @@ public class WebPageUtil {
         return info;
     }
 
-//    public static String smartLink(String old) {
-//        if (old.contains("http://mp.weixin.qq.com/")) {
-//            return old;
-//        }
-//
-//        String url = old;
-//        int query = url.lastIndexOf('?');
-//        if (query != -1) {
-//            url = url.substring(0, query);
-//        }
-//        query = url.lastIndexOf('#');
-//        if (query != -1) {
-//            url = url.substring(0, query);
-//        }
-//
-//        logger.info("smartUri: {}", smartUri(old));
-//        return url;
-//    }
+    private static Document requestUrl(String url) throws IOException {
+        return Jsoup.connect(url).userAgent(GOOGLE_USER_AGENT).timeout(5000).validateTLSCertificates(false).get();
+    }
+
+    //    public static String smartLink(String old) {
+    //        if (old.contains("http://mp.weixin.qq.com/")) {
+    //            return old;
+    //        }
+    //
+    //        String url = old;
+    //        int query = url.lastIndexOf('?');
+    //        if (query != -1) {
+    //            url = url.substring(0, query);
+    //        }
+    //        query = url.lastIndexOf('#');
+    //        if (query != -1) {
+    //            url = url.substring(0, query);
+    //        }
+    //
+    //        logger.info("smartUri: {}", smartUri(old));
+    //        return url;
+    //    }
 
     public static String smartUri(String old) {
         return UriComponentsBuilder.fromUriString(old)

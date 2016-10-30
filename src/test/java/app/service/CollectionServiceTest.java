@@ -17,10 +17,7 @@ package app.service;
 
 import app.App;
 import app.data.local.CollectionBindingRepository;
-import app.data.model.Collection;
-import app.data.model.CollectionBinding;
-import app.data.model.Link;
-import app.data.model.User;
+import app.data.model.*;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
@@ -58,15 +55,15 @@ public class CollectionServiceTest {
 
         Link link = new Link("https://www.google.com", "Google");
         logger.info(link.toString());
-        Collection googleCol = new Collection(one, link, "google search", "");
+        Collection googleCol = new Collection(one, link, "google search", new Image());
         mColService.postCollection(one.getUid(), googleCol);
 
         link = new Link("https://www.baidu.com", "Baidu");
         logger.info(link.toString());
-        Collection baiduCol = new Collection(one, link, "baidu search", "");
+        Collection baiduCol = new Collection(one, link, "baidu search", new Image());
         mColService.postCollection(one.getUid(), baiduCol);
 
-        baiduCol = new Collection(one, link, "Baidu Search", "");
+        baiduCol = new Collection(one, link, "Baidu Search", new Image());
         mColService.postCollection(two.getUid(), baiduCol);
 
         List<Collection> cols = mColService.findByUser(one.getUid(), 0, 5);

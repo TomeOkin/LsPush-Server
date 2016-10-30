@@ -45,15 +45,15 @@ public class UserInfoValidator {
     public int checkPasswordStrength(String password) {
         // 检查字符串格式 ([a-zA-Z0-9\\.,;]){6,}
         int strength = (password == null || password.length() < 6 || password.length() > 24) ? 0 :
-            CharMatcher.anyOf(".,;").or(CharMatcher.JAVA_LETTER_OR_DIGIT).negate().indexIn(password);
+            CharMatcher.anyOf(".,;").or(CharMatcher.javaLetterOrDigit()).negate().indexIn(password);
         if (strength >= 0) {
             return -1;
         }
 
-        strength = CharMatcher.DIGIT.indexIn(password) >= 0 ? 1 : 0;
+        strength = CharMatcher.digit().indexIn(password) >= 0 ? 1 : 0;
         strength += CharMatcher.anyOf(".,;").indexIn(password) >= 0 ? 1 : 0;
-        strength += CharMatcher.JAVA_LOWER_CASE.indexIn(password) >= 0 ? 1 : 0;
-        strength += CharMatcher.JAVA_UPPER_CASE.indexIn(password) >= 0 ? 1 : 0;
+        strength += CharMatcher.javaLowerCase().indexIn(password) >= 0 ? 1 : 0;
+        strength += CharMatcher.javaUpperCase().indexIn(password) >= 0 ? 1 : 0;
         return strength;
     }
 
@@ -64,7 +64,7 @@ public class UserInfoValidator {
     public boolean checkUserId(String userId) {
         // 检查字符串格式 ([a-zA-Z0-9]){3,}
         int strength = (userId == null || userId.length() < 3 || userId.length() > 24) ? 0 :
-            CharMatcher.JAVA_LETTER_OR_DIGIT.negate().indexIn(userId);
+            CharMatcher.javaLetterOrDigit().negate().indexIn(userId);
         return strength < 0;
     }
 
