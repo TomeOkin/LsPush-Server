@@ -52,12 +52,12 @@ public class PinServiceTest {
         List<PinData> pinDatas = new ArrayList<>();
 
         Link link = new Link("https://www.google.com", "Google");
-        Collection collection = new Collection(user, link, "google search", new Image());
+        Collection collection = new Collection(user, link, "google search", "");
         collectionService.postCollection(user.getUid(), collection);
         pinDatas.add(new PinData(collection, DateTime.now().toDate()));
 
         link = new Link("https://www.baidu.com", "Baidu");
-        collection = new Collection(user, link, "baidu search", new Image());
+        collection = new Collection(user, link, "baidu search", "");
         collectionService.postCollection(user.getUid(), collection);
         pinDatas.add(new PinData(collection, DateTime.now().toDate()));
 

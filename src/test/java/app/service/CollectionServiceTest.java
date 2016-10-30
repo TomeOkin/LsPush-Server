@@ -55,15 +55,15 @@ public class CollectionServiceTest {
 
         Link link = new Link("https://www.google.com", "Google");
         logger.info(link.toString());
-        Collection googleCol = new Collection(one, link, "google search", new Image());
+        Collection googleCol = new Collection(one, link, "google search", "");
         mColService.postCollection(one.getUid(), googleCol);
 
         link = new Link("https://www.baidu.com", "Baidu");
         logger.info(link.toString());
-        Collection baiduCol = new Collection(one, link, "baidu search", new Image());
+        Collection baiduCol = new Collection(one, link, "baidu search", "");
         mColService.postCollection(one.getUid(), baiduCol);
 
-        baiduCol = new Collection(one, link, "Baidu Search", new Image());
+        baiduCol = new Collection(one, link, "Baidu Search", "");
         mColService.postCollection(two.getUid(), baiduCol);
 
         List<Collection> cols = mColService.findByUser(one.getUid(), 0, 5);
