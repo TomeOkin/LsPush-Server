@@ -74,5 +74,21 @@ public class CollectionBinding implements Serializable {
                 ", date=" + date +
                 '}';
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Data data = (Data) o;
+
+            return uid.equals(data.uid);
+
+        }
+
+        @Override
+        public int hashCode() {
+            return uid.hashCode();
+        }
     }
 }

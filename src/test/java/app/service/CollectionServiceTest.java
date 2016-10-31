@@ -29,6 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -120,7 +121,7 @@ public class CollectionServiceTest {
         Assert.assertNotNull(colTag);
         logger.info(colTag.toString());
 
-        List<CollectionBinding> colTags = mColBindingRepo.findByTags(Arrays.asList("hello"), null);
+        List<CollectionBinding> colTags = mColBindingRepo.findByTags(Collections.singletonList("hello"), null);
         Assert.assertNotNull(colTags);
         Assert.assertEquals("colTags count is", 2, colTags.size());
         for (CollectionBinding tag : colTags) {

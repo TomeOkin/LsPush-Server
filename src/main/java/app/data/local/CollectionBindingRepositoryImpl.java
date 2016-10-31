@@ -44,13 +44,25 @@ public class CollectionBindingRepositoryImpl implements CollectionBindingReposit
 
     @Override
     public void addFavor(long colId, @Nonnull CollectionBinding.Data data) {
+        if (hasExistFavor(colId, data)) {
+            return;
+        }
+
         Query query = new Query();
-        query.addCriteria(Criteria.where("collectionId").is(colId));
+        query.addCriteria(
+            Criteria.where("collectionId").is(colId).and("favors").elemMatch(Criteria.where("uid").ne(data.uid)));
 
         Update update = new Update();
         update.addToSet("favors", data);
 
         mMongoTemplate.upsert(query, update, CollectionBinding.class);
+    }
+
+    private boolean hasExistFavor(long colId, @Nonnull CollectionBinding.Data data) {
+        Query query = new Query();
+        query.addCriteria(
+            Criteria.where("collectionId").is(colId).and("favors").elemMatch(Criteria.where("uid").is(data.uid)));
+        return mMongoTemplate.findOne(query, CollectionBinding.class) != null;
     }
 
     @Override
@@ -104,38 +116,38 @@ public class CollectionBindingRepositoryImpl implements CollectionBindingReposit
         query.addCriteria(Criteria.where("tags").in(tags)).with(pageable);
         return mMongoTemplate.find(query, CollectionBinding.class);
 
-//        // such as [{$project: {key:"$key", count: {$size: {$ifNull: ["$value",[]]}}}}, {$sort: {"count":1}}]
-//        // FIXME: 2016/9/30 [block] waiting for spring-data-mongodb 1.10 release
-//        // https://github.com/spring-projects/spring-data-mongodb/blob/eb1392cc1a0fcf25aa9e636863d36e6fee73e632/src/main/asciidoc/new-features.adoc
-//        // due to $ifNull
-//        List<AggregationOperation> operations = new ArrayList<>();
-//        operations.add(Aggregation.match(Criteria.where("tags").in(tags)));
-//
-//        String op = "{ $project : { \"collectionId\" : \"$collectionId\" , \"favorsCount\" : { $size : { \"$ifNull\" : [\"$favors\", []]}}}}";
-//        // but the result will be modify to ...{ "$ifNull" : [ "$favors" , { }]}...
-//        DBObject dbObject = BasicDBObject.parse(op);
-//        operations.add(new CommonAggregationOperation(dbObject));
-////        operations.add(Aggregation.project("collectionId")
-////            .and(ifNull("favors", new ArrayList<CollectionBinding.Data>())).size().as("favorsCount"));
-//        //operations.add(Aggregation.sort(Sort.Direction.DESC, "favorsCount"));
-//        if (pageable != null) {
-//            operations.add(Aggregation.skip(pageable.getOffset()));
-//            operations.add(Aggregation.limit(pageable.getPageSize()));
-//        }
-//        TypedAggregation<CollectionBinding> aggregation = Aggregation.newAggregation(CollectionBinding.class, operations);
-//        logger.info(aggregation.toString());
-////        Aggregation aggregation = Aggregation.newAggregation(operations);
-//        AggregationResults<CollectionBindingTemp> results =
-//            mMongoTemplate.aggregate(aggregation, CollectionBindingTemp.class);
-//        List<CollectionBindingTemp> tempList = results.getMappedResults();
-//
-//        List<CollectionBinding> colBindings = new ArrayList<>(tempList.size());
-//        for (CollectionBindingTemp item : tempList) {
-//            CollectionBinding colBinding = findByCollectionId(item.getCollectionId());
-//            // colBinding is non-null
-//            colBindings.add(colBinding);
-//        }
-//        return colBindings;
+        //        // such as [{$project: {key:"$key", count: {$size: {$ifNull: ["$value",[]]}}}}, {$sort: {"count":1}}]
+        //        // FIXME: 2016/9/30 [block] waiting for spring-data-mongodb 1.10 release
+        //        // https://github.com/spring-projects/spring-data-mongodb/blob/eb1392cc1a0fcf25aa9e636863d36e6fee73e632/src/main/asciidoc/new-features.adoc
+        //        // due to $ifNull
+        //        List<AggregationOperation> operations = new ArrayList<>();
+        //        operations.add(Aggregation.match(Criteria.where("tags").in(tags)));
+        //
+        //        String op = "{ $project : { \"collectionId\" : \"$collectionId\" , \"favorsCount\" : { $size : { \"$ifNull\" : [\"$favors\", []]}}}}";
+        //        // but the result will be modify to ...{ "$ifNull" : [ "$favors" , { }]}...
+        //        DBObject dbObject = BasicDBObject.parse(op);
+        //        operations.add(new CommonAggregationOperation(dbObject));
+        ////        operations.add(Aggregation.project("collectionId")
+        ////            .and(ifNull("favors", new ArrayList<CollectionBinding.Data>())).size().as("favorsCount"));
+        //        //operations.add(Aggregation.sort(Sort.Direction.DESC, "favorsCount"));
+        //        if (pageable != null) {
+        //            operations.add(Aggregation.skip(pageable.getOffset()));
+        //            operations.add(Aggregation.limit(pageable.getPageSize()));
+        //        }
+        //        TypedAggregation<CollectionBinding> aggregation = Aggregation.newAggregation(CollectionBinding.class, operations);
+        //        logger.info(aggregation.toString());
+        ////        Aggregation aggregation = Aggregation.newAggregation(operations);
+        //        AggregationResults<CollectionBindingTemp> results =
+        //            mMongoTemplate.aggregate(aggregation, CollectionBindingTemp.class);
+        //        List<CollectionBindingTemp> tempList = results.getMappedResults();
+        //
+        //        List<CollectionBinding> colBindings = new ArrayList<>(tempList.size());
+        //        for (CollectionBindingTemp item : tempList) {
+        //            CollectionBinding colBinding = findByCollectionId(item.getCollectionId());
+        //            // colBinding is non-null
+        //            colBindings.add(colBinding);
+        //        }
+        //        return colBindings;
     }
 
     public static IfNullOperator ifNull(String field, Object replacement) {
