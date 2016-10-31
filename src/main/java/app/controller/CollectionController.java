@@ -22,6 +22,8 @@ import app.data.model.CollectionResponse;
 import app.service.AuthService;
 import app.service.CollectionService;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +33,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/collection")
 public class CollectionController {
+    private static final Logger logger = LoggerFactory.getLogger(CollectionController.class);
     private final AuthService mAuthService;
     private final CollectionService mColService;
 
@@ -48,6 +51,7 @@ public class CollectionController {
                 ResultCode.errorCode.get(ResultCode.USER_AUTH_FAILURE));
         }
 
+        logger.info("collection: {}", col);
         mColService.postCollection(uid, col);
         return new BaseResponse();
     }
