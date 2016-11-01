@@ -79,14 +79,14 @@ public class CollectionServiceTest {
         CollectionBinding.Data data = new CollectionBinding.Data();
         data.date = DateTime.now().toDate();
         data.uid = one.getUid();
-        mColBindingRepo.addFavor(colId, data);
-        mColBindingRepo.addFavor(colId, data);
+        mColBindingRepo.addFavor(colId, one.getUid(), data);
+        mColBindingRepo.addFavor(colId, one.getUid(), data);
 
         // prepare favor
         data = new CollectionBinding.Data();
         data.date = DateTime.now().toDate();
         data.uid = two.getUid();
-        mColBindingRepo.addFavor(colId, data);
+        mColBindingRepo.addFavor(colId, two.getUid(), data);
 
         // getLatestCollections
         List<Collection> latestCols = mColService.getLatestCollections(one.getUid() ,0, 5);

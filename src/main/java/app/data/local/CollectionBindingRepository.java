@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public interface CollectionBindingRepository {
-    void addFavor(long colId, @Nonnull CollectionBinding.Data data);
+    void addFavor(long colId, String uid, @Nonnull CollectionBinding.Data data);
 
     void removeFavor(long colId, String uid);
 

@@ -67,7 +67,7 @@ public class FavorController {
         if (colBinding == null || colBinding.getFavors() == null || colBinding.getFavors().size() != 1) {
             return new BaseResponse(ResultCode.ARGUMENT_ERROR, ResultCode.errorCode.get(ResultCode.ARGUMENT_ERROR));
         }
-        mColBindingRepo.addFavor(colBinding.getCollectionId(), colBinding.getFavors().get(0));
+        mColBindingRepo.addFavor(colBinding.getCollectionId(), uid, colBinding.getFavors().get(0));
         return new BaseResponse();
     }
 }

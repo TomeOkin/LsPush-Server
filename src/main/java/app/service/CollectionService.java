@@ -24,6 +24,8 @@ import app.data.model.Link;
 import app.data.model.User;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +39,7 @@ import java.util.List;
 
 @Service
 public class CollectionService {
+    private static final Logger logger = LoggerFactory.getLogger(CollectionService.class);
     private final CollectionRepository mColRepo;
     private final LinkRepository mLinkRepo;
     private final CollectionBindingRepository mColBindingRepo;
@@ -93,7 +96,7 @@ public class CollectionService {
         CollectionBinding.Data favor = new CollectionBinding.Data();
         favor.uid = uid;
         favor.date = DateTime.now().toDate();
-        mColBindingRepo.addFavor(col.getId(), favor);
+        mColBindingRepo.addFavor(col.getId(), uid, favor);
         // endregion
     }
 
@@ -149,6 +152,7 @@ public class CollectionService {
     private void fillCollection(Collection col, @Nullable String uid, boolean hasFavor) {
         fillBinding(col, uid, hasFavor);
         fillExplorers(col);
+        logger.error("col: {}", col.toString());
     }
 
     @SuppressWarnings("ConstantConditions")

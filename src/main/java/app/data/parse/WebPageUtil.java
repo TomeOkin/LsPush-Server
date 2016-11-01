@@ -124,7 +124,7 @@ public class WebPageUtil {
     }
 
     private static Document requestUrl(String url) throws IOException {
-        return Jsoup.connect(url).userAgent(GOOGLE_USER_AGENT).timeout(10000).validateTLSCertificates(false).get();
+        return Jsoup.connect(url).userAgent(GOOGLE_USER_AGENT).timeout(20000).validateTLSCertificates(false).get();
     }
 
     //    public static String smartLink(String old) {

@@ -26,6 +26,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -112,15 +113,15 @@ public class App {
         }
     }
 
-//    // 目前处于测试阶段，启动服务器时先清空数据库
-//    @Autowired RedisConnectionFactory factory;
-//    @Autowired FavorRepository favorRepo;
-//    @Autowired CollectionTagRepository colTagRepo;
-//
-//    @PostConstruct
-//    public void flushDb() {
-//        factory.getConnection().flushDb();
-//        favorRepo.dropAll();
-//        colTagRepo.dropAll();
-//    }
+    //目前处于测试阶段，启动服务器时先清空数据库
+    //@Autowired RedisConnectionFactory factory;
+    //@Autowired CollectionBindingRepository colBindingRepo;
+    @Autowired MongoTemplate mongoTemplate;
+
+    @PostConstruct
+    public void flushDb() {
+        //factory.getConnection().flushDb();
+        //colBindingRepo.dropAll();
+        mongoTemplate.getDb().dropDatabase();
+    }
 }

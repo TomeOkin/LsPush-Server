@@ -43,14 +43,14 @@ public class CollectionBindingRepositoryImpl implements CollectionBindingReposit
     }
 
     @Override
-    public void addFavor(long colId, @Nonnull CollectionBinding.Data data) {
+    public void addFavor(long colId, String uid, @Nonnull CollectionBinding.Data data) {
         if (hasExistFavor(colId, data)) {
             return;
         }
+        data.uid = uid;
 
         Query query = new Query();
-        query.addCriteria(
-            Criteria.where("collectionId").is(colId).and("favors").elemMatch(Criteria.where("uid").ne(data.uid)));
+        query.addCriteria(Criteria.where("collectionId").is(colId));
 
         Update update = new Update();
         update.addToSet("favors", data);
