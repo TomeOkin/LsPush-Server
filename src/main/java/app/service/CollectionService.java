@@ -122,7 +122,7 @@ public class CollectionService {
         if (one != null) {
             col = mColRepo.findOneByUserAndLink(user, one);
             if (col != null) {
-                fillCollection(col, uid, false);
+                fillCollection(col, uid);
             }
         }
 
@@ -137,7 +137,7 @@ public class CollectionService {
         User user = prepareUser(uid);
         Page<Collection> colPage = mColRepo.findByUser(user, new PageRequest(page, size, mLatestSort));
         List<Collection> colList = getFromPage(colPage, false);
-        colList.forEach(collection -> fillCollection(collection, uid, true));
+        colList.forEach(collection -> fillCollection(collection, uid));
         return colList;
     }
 
@@ -145,14 +145,14 @@ public class CollectionService {
         Link link = mLinkRepo.findFirstByUrl(url);
         Page<Collection> colPage = mColRepo.findByLink(link, new PageRequest(page, size, sort));
         List<Collection> colList = getFromPage(colPage, true);
-        colList.forEach(collection -> fillCollection(collection, uid, false));
+        colList.forEach(collection -> fillCollection(collection, uid));
         return colList;
     }
 
     public List<Collection> getLatestCollections(String uid, int page, int size) {
         Page<Collection> colPage = mColRepo.findAll(new PageRequest(page, size, mLatestSort));
         List<Collection> colList = getFromPage(colPage, true);
-        colList.forEach(collection -> fillCollection(collection, uid, false));
+        colList.forEach(collection -> fillCollection(collection, uid));
         return colList;
     }
 
@@ -177,14 +177,14 @@ public class CollectionService {
         return colList;
     }
 
-    private void fillCollection(Collection col, @Nullable String uid, boolean hasFavor) {
-        fillBinding(col, uid, hasFavor);
+    private void fillCollection(Collection col, @Nullable String uid) {
+        fillBinding(col, uid);
         fillExplorers(col);
         logger.error("col: {}", col.toString());
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void fillBinding(Collection col, @Nullable String uid, boolean hasFavor) {
+    private void fillBinding(Collection col, @Nullable String uid) {
         CollectionBinding colBinding = mColBindingRepo.findByCollectionId(col.getId());
         final List<CollectionBinding.Data> favors = colBinding == null ? null : colBinding.getFavors();
         if (favors == null) {
@@ -193,7 +193,7 @@ public class CollectionService {
             col.setTags(null);
         } else {
             col.setFavorCount(favors.size());
-            final boolean favor = hasFavor || hasFavor(uid, favors);
+            final boolean favor = hasFavor(uid, favors);
             col.setHasFavor(favor);
             col.setTags(colBinding == null ? null : colBinding.getTags());
         }
