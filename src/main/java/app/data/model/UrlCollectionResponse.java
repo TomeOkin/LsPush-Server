@@ -15,28 +15,23 @@
  */
 package app.data.model;
 
-public class WebPageInfo {
-    public String url;
-    public String title;
-    public String description;
+public class UrlCollectionResponse extends BaseResponse {
+    private Collection collection;
 
-    @Override
-    public String toString() {
-        return "WebPageInfo{" +
-            "url='" + url + '\'' +
-            ", title='" + title + '\'' +
-            ", description='" + description + '\'' +
-            '}';
+    public UrlCollectionResponse(Collection collection) {
+        this.collection = collection;
     }
 
-    public Collection toCollection() {
-        Link link = new Link();
-        link.setUrl(url);
-        link.setTitle(title);
+    public UrlCollectionResponse(int resultCode, String result, Collection collection) {
+        super(resultCode, result);
+        this.collection = collection;
+    }
 
-        Collection collection = new Collection();
-        collection.setDescription(description);
-        collection.setLink(link);
+    public Collection getCollection() {
         return collection;
+    }
+
+    public void setCollection(Collection collection) {
+        this.collection = collection;
     }
 }

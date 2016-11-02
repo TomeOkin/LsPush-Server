@@ -33,6 +33,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,24 +68,17 @@ public class CollectionService {
     @Transactional
     public void postCollection(String uid, Collection col) {
         // region: update collection
-        User user = new User();
-        user.setUid(uid);
+        User user = prepareUser(uid);
         col.setUser(user);
 
-        Link link = col.getLink();
-        if (StringUtils.isEmpty(link.getUrlUnique())) {
-            link = link.cloneSelf(); // update link, add unique code
-        }
-        Link one = mLinkRepo.findFirstByUrl(link.getUrl());
-        if (one == null) {
-            mLinkRepo.save(link);
-        }
+        Link link = prepareAndSaveLink(col.getLink());
         col.setLink(link);
 
         Collection old = mColRepo.findOneByUserAndLink(user, link);
         if (old == null) {
             col.setCreateDate(DateTime.now().toDate());
         } else {
+            col.setId(old.getId());
             col.setCreateDate(old.getCreateDate());
         }
         col.setUpdateDate(DateTime.now().toDate());
@@ -100,13 +94,43 @@ public class CollectionService {
         // endregion
     }
 
+    private User prepareUser(String uid) {
+        return new User(uid);
+    }
+
+    private Link prepareLink(@Nonnull Link old) {
+        Link link = old;
+        if (StringUtils.isEmpty(link.getUrlUnique())) {
+            link = link.cloneSelf(); // update link, add unique code
+        }
+        return link;
+    }
+
+    private Link prepareAndSaveLink(Link old) {
+        Link link = prepareLink(old);
+        Link one = mLinkRepo.findFirstByUrl(link.getUrl());
+        if (one == null) {
+            mLinkRepo.save(link);
+        }
+        return link;
+    }
+
+    public Collection findByUserAndLink(String uid, String url) {
+        User user = prepareUser(uid);
+        Link link = new Link(url, "");
+        Collection col = mColRepo.findOneByUserAndLink(user, link);
+        if (col != null) {
+            fillCollection(col, uid, false);
+        }
+        return col;
+    }
+
     public List<Collection> findByUser(String uid, int page, int size) {
         if (StringUtils.isEmpty(uid)) {
             return null;
         }
 
-        User user = new User();
-        user.setUid(uid);
+        User user = prepareUser(uid);
         Page<Collection> colPage = mColRepo.findByUser(user, new PageRequest(page, size, mLatestSort));
         List<Collection> colList = getFromPage(colPage, false);
         colList.forEach(collection -> fillCollection(collection, uid, true));

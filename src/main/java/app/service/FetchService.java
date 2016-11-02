@@ -15,12 +15,14 @@
  */
 package app.service;
 
+import app.data.model.Collection;
 import app.data.model.WebPageInfo;
 import app.data.parse.WebPageUtil;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
@@ -30,7 +32,12 @@ public class FetchService {
     private static final Logger logger = LoggerFactory.getLogger(FetchService.class);
     private final Cache<String, WebPageInfo> mUrlInfoCache;
 
-    public FetchService() {
+    private final CollectionService mColService;
+
+    @Autowired
+    public FetchService(CollectionService colService) {
+        mColService = colService;
+
         mUrlInfoCache = CacheBuilder.newBuilder()
             .initialCapacity(100)
             .maximumSize(500)
@@ -38,12 +45,25 @@ public class FetchService {
             .build();
     }
 
-    public WebPageInfo getUrlInfo(String url) {
+    private WebPageInfo getUrlInfo(String url) {
         try {
             return WebPageUtil.parse(url, mUrlInfoCache);
         } catch (Exception e) {
             logger.warn("get url info false", e);
         }
         return null;
+    }
+
+    public Collection getUrlInfo(String uid, String url) {
+        Collection col = mColService.findByUserAndLink(uid, url);
+        if (col == null) {
+            WebPageInfo info = getUrlInfo(url);
+            if (info == null) {
+                info = new WebPageInfo();
+                info.url = url;
+            }
+            col = info.toCollection();
+        }
+        return col;
     }
 }

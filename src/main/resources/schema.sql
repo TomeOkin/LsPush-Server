@@ -38,6 +38,8 @@ create table collection (
 	  CONSTRAINT `collection_user_id_constraint` FOREIGN KEY (`user_id`) REFERENCES `user` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+alter table collection add constraint `uid_link_id_constraint` UNIQUE(`link_id`, `user_id`);
+
 CREATE TABLE pin (
     id BIGINT AUTO_INCREMENT NOT NULL,
     user_id VARCHAR(24) NOT NULL,

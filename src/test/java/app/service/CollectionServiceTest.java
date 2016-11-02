@@ -58,6 +58,8 @@ public class CollectionServiceTest {
         logger.info(link.toString());
         Collection googleCol = new Collection(one, link, "google search", "");
         mColService.postCollection(one.getUid(), googleCol);
+        Collection googleCol2 = new Collection(one, link, "google search", "");
+        mColService.postCollection(one.getUid(), googleCol2);
 
         link = new Link("https://www.baidu.com", "Baidu");
         logger.info(link.toString());

@@ -16,34 +16,41 @@
 package app.controller;
 
 import app.config.ResultCode;
-import app.data.model.UrlFetchResponse;
-import app.data.model.WebPageInfo;
+import app.data.model.Collection;
+import app.data.model.UrlCollectionResponse;
+import app.service.AuthService;
 import app.service.FetchService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/link")
 public class LinkController {
-    private final FetchService fetchService;
+    private final FetchService mFetchService;
+    private final AuthService mAuthService;
 
     @Autowired
-    public LinkController(FetchService fetchService) {
-        this.fetchService = fetchService;
+    public LinkController(FetchService fetchService, AuthService authService) {
+        mFetchService = fetchService;
+        mAuthService = authService;
     }
 
     @GetMapping("/fetch")
-    public UrlFetchResponse fetchUrInfo(@RequestParam(value = "url") String url) {
-        WebPageInfo info = StringUtils.isEmpty(url) ? null : fetchService.getUrlInfo(url);
-        if (info != null) {
-            return new UrlFetchResponse(info);
+    public UrlCollectionResponse fetchUrInfo(@RequestHeader(value = "token") String token,
+        @RequestParam(value = "url") String url) {
+        String uid = mAuthService.checkIfAuthBind(token);
+        if (StringUtils.isEmpty(uid)) {
+            return new UrlCollectionResponse(ResultCode.USER_AUTH_FAILURE,
+                ResultCode.errorCode.get(ResultCode.USER_AUTH_FAILURE), null);
         }
 
-        return new UrlFetchResponse(ResultCode.ARGUMENT_ERROR, ResultCode.errorCode.get(ResultCode.ARGUMENT_ERROR),
+        Collection col = StringUtils.isEmpty(url) ? null : mFetchService.getUrlInfo(uid, url);
+        if (col != null) {
+            return new UrlCollectionResponse(col);
+        }
+
+        return new UrlCollectionResponse(ResultCode.ARGUMENT_ERROR, ResultCode.errorCode.get(ResultCode.ARGUMENT_ERROR),
             null);
     }
 }

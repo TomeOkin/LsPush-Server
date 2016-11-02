@@ -47,6 +47,12 @@ public class User implements Serializable {
     @JsonIgnore @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Pin pin;
 
+    public User() {}
+
+    public User(String uid) {
+        this.uid = uid;
+    }
+
     /**
      * provide for explorer, {@link app.service.CollectionService#fillExplorers(Collection)}
      */
