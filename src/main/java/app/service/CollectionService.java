@@ -117,11 +117,15 @@ public class CollectionService {
 
     public Collection findByUserAndLink(String uid, String url) {
         User user = prepareUser(uid);
-        Link link = new Link(url, "");
-        Collection col = mColRepo.findOneByUserAndLink(user, link);
-        if (col != null) {
-            fillCollection(col, uid, false);
+        Link one = mLinkRepo.findFirstByUrl(url);
+        Collection col = null;
+        if (one != null) {
+            col = mColRepo.findOneByUserAndLink(user, one);
+            if (col != null) {
+                fillCollection(col, uid, false);
+            }
         }
+
         return col;
     }
 
