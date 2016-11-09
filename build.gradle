@@ -7,7 +7,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE'
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.4.2.RELEASE'
         // run help->dependencyUpdates to see new available version
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0'
     }
@@ -61,7 +61,7 @@ dependencies {
     compile "commons-validator:commons-validator:1.5.1"
     compile "com.google.guava:guava:20.0"
     compile "org.apache.commons:commons-lang3:3.5"
-    compile "joda-time:joda-time:2.9.4"
+    compile "joda-time:joda-time:2.9.5"
     compile "org.jsoup:jsoup:1.10.1"
 
     // thymeleaf 3
@@ -71,7 +71,7 @@ dependencies {
     }
     compile "org.thymeleaf:thymeleaf-spring4:3.0.2.RELEASE"
     compile "org.thymeleaf:thymeleaf:3.0.2.RELEASE"
-    compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.0.5"
+    compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.1.0"
 
     // redis
     compile ("org.springframework.boot:spring-boot-starter-data-redis") {
