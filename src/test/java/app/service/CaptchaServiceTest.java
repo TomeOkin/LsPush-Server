@@ -17,7 +17,10 @@ package app.service;
 
 import app.App;
 import app.data.crypt.Crypto;
-import app.data.model.*;
+import app.data.model.BaseResponse;
+import app.data.model.CaptchaRequest;
+import app.data.model.CryptoToken;
+import app.data.model.RegisterData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;

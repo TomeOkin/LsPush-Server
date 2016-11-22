@@ -45,10 +45,10 @@ public class SimpleCacheTest {
     @Test
     public void cacheExpireTest() {
         Cache<Integer, Val> cache = CacheBuilder.newBuilder()
-                .initialCapacity(2)
-                .maximumSize(4)
-                .expireAfterWrite(1300, TimeUnit.MILLISECONDS)
-                .build();
+            .initialCapacity(2)
+            .maximumSize(4)
+            .expireAfterWrite(1300, TimeUnit.MILLISECONDS)
+            .build();
         cache.put(1, new Val());
         cache.put(2, new Val());
         Val i = cache.getIfPresent(1);

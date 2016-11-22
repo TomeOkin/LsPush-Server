@@ -17,7 +17,10 @@ package app.service;
 
 import app.App;
 import app.data.local.UserRepository;
-import app.data.model.*;
+import app.data.model.Collection;
+import app.data.model.Link;
+import app.data.model.PinData;
+import app.data.model.User;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;

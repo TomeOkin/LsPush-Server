@@ -21,7 +21,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import javax.crypto.*;
-import java.io.*;
+import java.io.IOException;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -33,7 +33,7 @@ public class BaseCryptTest {
 
     @Test
     public void keyCode() throws NoSuchAlgorithmException, IOException, InvalidKeySpecException,
-            NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         // generate key and format it
         KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
         SecureRandom random = new SecureRandom();

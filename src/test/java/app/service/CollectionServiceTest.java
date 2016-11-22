@@ -17,7 +17,10 @@ package app.service;
 
 import app.App;
 import app.data.local.CollectionBindingRepository;
-import app.data.model.*;
+import app.data.model.Collection;
+import app.data.model.CollectionBinding;
+import app.data.model.Link;
+import app.data.model.User;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
@@ -91,7 +94,7 @@ public class CollectionServiceTest {
         mColBindingRepo.addFavor(colId, two.getUid(), data);
 
         // getLatestCollections
-        List<Collection> latestCols = mColService.getLatestCollections(one.getUid() ,0, 5);
+        List<Collection> latestCols = mColService.getLatestCollections(one.getUid(), 0, 5);
         Assert.assertNotNull(latestCols);
         logger.info("Latest Collections: ");
         for (Collection item : latestCols) {

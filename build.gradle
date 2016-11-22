@@ -54,14 +54,14 @@ dependencies {
         exclude group: 'org.hibernate', module:'hibernate-core'
     }
     compile "org.hibernate:hibernate-core:5.2.4.Final"
-    compile "mysql:mysql-connector-java:5.1.39"
+    compile "mysql:mysql-connector-java:5.1.40"
 
     compile "org.springframework.boot:spring-boot-starter-mail"
-    compile "com.googlecode.libphonenumber:libphonenumber:7.7.3"
+    compile "com.googlecode.libphonenumber:libphonenumber:7.7.4"
     compile "commons-validator:commons-validator:1.5.1"
     compile "com.google.guava:guava:20.0"
     compile "org.apache.commons:commons-lang3:3.5"
-    compile "joda-time:joda-time:2.9.5"
+    compile "joda-time:joda-time:2.9.6"
     compile "org.jsoup:jsoup:1.10.1"
 
     // thymeleaf 3
@@ -71,7 +71,7 @@ dependencies {
     }
     compile "org.thymeleaf:thymeleaf-spring4:3.0.2.RELEASE"
     compile "org.thymeleaf:thymeleaf:3.0.2.RELEASE"
-    compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.1.0"
+    compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.1.1"
 
     // redis
     compile ("org.springframework.boot:spring-boot-starter-data-redis") {
