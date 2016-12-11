@@ -95,22 +95,27 @@ public class CaptchaService {
         resetBloomFilter();
     }
 
+    public boolean isValidSendTarget(CaptchaRequest request, boolean checkUserExist) {
+        String recipient = request != null ? request.getSendObject() : null;
+        if (StringUtils.isEmpty(recipient)) {
+            return false;
+        }
+
+        if (recipient.contains("@")) {
+            // 邮箱有效，用户是否已存在
+            return mUserInfoValidator.isEmailValid(recipient) && (!checkUserExist
+                || mUserRepo.findFirstByEmail(recipient) == null);
+        } else {
+            return mUserInfoValidator.isPhoneValid(recipient, request.getRegion());
+        }
+    }
+
     public int sendAuthCode(final CaptchaRequest request) {
         // 合法检查
-        String sendObject = request.getSendObject();
-        if (StringUtils.isEmpty(sendObject)) {
+        if (!isValidSendTarget(request, true)) {
             return INVALID_CAPTCHA;
         }
 
-        boolean isValid;
-        if (sendObject.contains("@")) {
-            isValid = mUserInfoValidator.isEmailValid(sendObject) && mUserRepo.findFirstByEmail(sendObject) == null;
-        } else {
-            isValid = mUserInfoValidator.isPhoneValid(sendObject, request.getRegion());
-        }
-        if (!isValid) {
-            return INVALID_CAPTCHA;
-        }
         final Captcha found = mAuthCodeMap.getIfPresent(request);
         if (found != null) {
             // 如果两次发送间隔少于 1 分钟，就拒绝发送
@@ -132,7 +137,7 @@ public class CaptchaService {
             }
         } catch (Exception e) {
             logger.error("send auth code failure", e);
-            return SEND_CAPTCHA_FAILURE;
+            return ResultCode.SEND_CAPTCHA_FAILED;
         }
 
         return BaseResponse.COMMON_SUCCESS;
@@ -181,7 +186,7 @@ public class CaptchaService {
                     return BaseResponse.COMMON_SUCCESS;
                 } else {
                     found.accessTimes++;
-                    return ResultCode.MATCHING_FAILURE;
+                    return ResultCode.MATCHING_FAILED;
                 }
             }
 
@@ -191,7 +196,7 @@ public class CaptchaService {
         }
 
         // not found or try beyond 3 times
-        return MATCHING_FAILURE;
+        return ResultCode.MATCHING_FAILED;
     }
 
     protected void sendEmail(String email, String authCode) throws MessagingException, UnsupportedEncodingException {

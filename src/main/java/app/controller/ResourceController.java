@@ -17,7 +17,7 @@ package app.controller;
 
 import app.config.ResultCode;
 import app.data.model.BaseResponse;
-import app.data.model.UploadResponse;
+import app.data.model.Response;
 import app.data.model.internal.FileResource;
 import app.data.model.internal.StringResource;
 import app.service.ResourceService;
@@ -52,16 +52,11 @@ public class ResourceController {
      * resourceType: 1: avatar，2：other
      */
     @PostMapping(value = "/upload/{resourceType:.*}")
-    public UploadResponse upload(@RequestParam("file") MultipartFile file, @PathVariable int resourceType) {
+    public Response<String> upload(@RequestParam("file") MultipartFile file, @PathVariable int resourceType) {
         logger.info("---------------upload resource-----------------");
         StringResource resource = new StringResource();
         int result = resourceService.upload(file, resourceType, resource);
-        if (result == BaseResponse.COMMON_SUCCESS) {
-            return new UploadResponse(resource.filename);
-        }
-
-        String description = ResultCode.errorCode.getOrDefault(result, "Upload file failure");
-        return new UploadResponse(result, description, "");
+        return ResultCode.get(result, "Upload file failure", resource.filename);
     }
 
     @GetMapping(value = "/download/{resourceType:.*}")

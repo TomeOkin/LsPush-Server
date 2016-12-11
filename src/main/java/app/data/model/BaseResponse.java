@@ -47,4 +47,16 @@ public class BaseResponse {
     public void setResult(String result) {
         this.result = result;
     }
+
+    public boolean isSuccess() {
+        return resultCode == COMMON_SUCCESS;
+    }
+
+    @Override
+    public String toString() {
+        return "BaseResponse{" +
+            "resultCode=" + resultCode +
+            ", result='" + result + '\'' +
+            '}';
+    }
 }

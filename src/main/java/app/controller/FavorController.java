@@ -19,7 +19,7 @@ import app.config.ResultCode;
 import app.data.local.CollectionBindingRepository;
 import app.data.model.BaseResponse;
 import app.data.model.CollectionBinding;
-import app.data.model.CollectionBindingResponse;
+import app.data.model.Response;
 import app.service.AuthService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,17 +38,16 @@ public class FavorController {
     }
 
     @GetMapping("/get")
-    public CollectionBindingResponse getFavor(@RequestParam(value = "colId") long colId) {
+    public Response<CollectionBinding> getFavor(@RequestParam(value = "colId") long colId) {
         CollectionBinding colBinding = mColBindingRepo.findByCollectionId(colId);
-        return new CollectionBindingResponse(colBinding);
+        return new Response<>(colBinding);
     }
 
     @PostMapping("/remove")
     public BaseResponse removeFavor(@RequestHeader(value = "token") String token, @RequestBody long colId) {
         String uid = mAuthService.checkIfAuthBind(token);
         if (StringUtils.isEmpty(uid)) {
-            return new BaseResponse(ResultCode.USER_AUTH_FAILURE,
-                ResultCode.errorCode.get(ResultCode.USER_AUTH_FAILURE));
+            return ResultCode.error(ResultCode.USER_AUTH_FAILED);
         }
 
         mColBindingRepo.removeFavor(colId, uid);
@@ -60,12 +59,11 @@ public class FavorController {
         @RequestBody CollectionBinding colBinding) {
         String uid = mAuthService.checkIfAuthBind(token);
         if (StringUtils.isEmpty(uid)) {
-            return new BaseResponse(ResultCode.USER_AUTH_FAILURE,
-                ResultCode.errorCode.get(ResultCode.USER_AUTH_FAILURE));
+            return ResultCode.error(ResultCode.USER_AUTH_FAILED);
         }
 
         if (colBinding == null || colBinding.getFavors() == null || colBinding.getFavors().size() != 1) {
-            return new BaseResponse(ResultCode.ARGUMENT_ERROR, ResultCode.errorCode.get(ResultCode.ARGUMENT_ERROR));
+            return ResultCode.error(ResultCode.ARGUMENT_ERROR);
         }
         mColBindingRepo.addFavor(colBinding.getCollectionId(), uid, colBinding.getFavors().get(0));
         return new BaseResponse();

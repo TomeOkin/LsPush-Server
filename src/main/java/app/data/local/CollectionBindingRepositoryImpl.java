@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.IfNullOperator;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -150,9 +149,9 @@ public class CollectionBindingRepositoryImpl implements CollectionBindingReposit
         //        return colBindings;
     }
 
-    public static IfNullOperator ifNull(String field, Object replacement) {
-        return IfNullOperator.newBuilder().ifNull(field).thenReplaceWith(replacement);
-    }
+//    public static IfNullOperator ifNull(String field, Object replacement) {
+//        return IfNullOperator.newBuilder().ifNull(field).thenReplaceWith(replacement);
+//    }
 
     @Override
     public void dropAll() {

@@ -15,20 +15,20 @@
  */
 package app.data.model.internal;
 
-public class FreshEvent {
-    public static final int EVENT_COLLECTION = 1;
-    public static final int EVENT_FAVOR = 2;
-    public static final int EVENT_UN_COLLECTION = 3;
-    public static final int EVENT_UN_FAVOR = 4;
-
-    public int event;
-    public int colId;
-
-    @Override
-    public String toString() {
-        return "FreshEvent{" +
-            "event=" + event +
-            ", colId=" + colId +
-            '}';
-    }
-}
+//public class FreshEvent {
+//    public static final int EVENT_COLLECTION = 1;
+//    public static final int EVENT_FAVOR = 2;
+//    public static final int EVENT_UN_COLLECTION = 3;
+//    public static final int EVENT_UN_FAVOR = 4;
+//
+//    public int event;
+//    public int colId;
+//
+//    @Override
+//    public String toString() {
+//        return "FreshEvent{" +
+//            "event=" + event +
+//            ", colId=" + colId +
+//            '}';
+//    }
+//}

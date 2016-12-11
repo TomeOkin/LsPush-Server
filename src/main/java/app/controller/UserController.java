@@ -16,18 +16,12 @@
 package app.controller;
 
 import app.config.ResultCode;
-import app.data.model.AccessResponse;
-import app.data.model.BaseResponse;
-import app.data.model.CaptchaRequest;
-import app.data.model.CryptoToken;
-import app.data.model.internal.FreshEvent;
+import app.data.model.*;
 import app.service.AuthService;
 import app.service.CaptchaService;
-import app.service.FreshService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -43,27 +37,23 @@ public class UserController {
         this.authService = authService;
     }
 
-    @Autowired JmsTemplate jmsTemplate;
+    //    @Autowired JmsTemplate jmsTemplate;
 
     @GetMapping("")
     public String hello() {
-        FreshEvent event = new FreshEvent();
-        event.event = FreshEvent.EVENT_COLLECTION;
-        event.colId = 101;
-        jmsTemplate.convertAndSend(FreshService.DESTINATION, event);
+        //        FreshEvent event = new FreshEvent();
+        //        event.event = FreshEvent.EVENT_COLLECTION;
+        //        event.colId = 101;
+        //        jmsTemplate.convertAndSend(FreshService.DESTINATION, event);
         return "hello person!";
     }
 
     @PostMapping("/sendCaptcha")
     public BaseResponse sendCaptcha(@RequestBody CaptchaRequest request) {
         logger.info("----------sendCaptcha request access-------------");
-        int result = captchaService.sendAuthCode(request);
-        if (result == BaseResponse.COMMON_SUCCESS) {
-            return new BaseResponse();
-        }
 
-        String description = ResultCode.errorCode.getOrDefault(result, "Send Captcha Failure");
-        return new BaseResponse(result, description);
+        int result = captchaService.sendAuthCode(request);
+        return ResultCode.get(result, "Send Captcha Failed", null);
     }
 
     @PostMapping("/checkCaptcha")
@@ -71,80 +61,50 @@ public class UserController {
         logger.info("----------checkCaptcha request access-------------");
 
         int result = captchaService.checkCaptcha(cryptoToken);
-        if (result == BaseResponse.COMMON_SUCCESS) {
-            return new BaseResponse();
-        }
-
-        String description = ResultCode.errorCode.getOrDefault(result, "Check Captcha Failure");
-        return new BaseResponse(result, description);
+        return ResultCode.get(result, "Check Captcha Failed", cryptoToken);
     }
 
     @PostMapping("/register")
-    public AccessResponse register(@RequestBody CryptoToken cryptoToken) {
+    public Response<AccessResponse> register(@RequestBody CryptoToken cryptoToken) {
         logger.info("----------register request access-------------");
+
         AccessResponse accessResponse = new AccessResponse();
         int result = authService.register(cryptoToken, accessResponse);
-        if (result == BaseResponse.COMMON_SUCCESS) {
-            return accessResponse;
-        }
-
-        accessResponse.setResultCode(result);
-        String description = ResultCode.errorCode.getOrDefault(result, "Register Failure");
-        accessResponse.setResult(description);
-        return accessResponse;
+        return ResultCode.get(result, "Register Failed", accessResponse);
     }
 
     @PostMapping("/refreshExpireToken")
-    public AccessResponse refreshExpireToken(@RequestBody CryptoToken refreshToken) {
+    public Response<AccessResponse> refreshExpireToken(@RequestBody CryptoToken refreshToken) {
         logger.info("----------refreshExpireToken request access-------------");
+
         AccessResponse accessResponse = new AccessResponse();
         int result = authService.refreshExpireToken(refreshToken, accessResponse);
-        if (result == BaseResponse.COMMON_SUCCESS) {
-            return accessResponse;
-        }
-
-        String description = ResultCode.errorCode.getOrDefault(result, "Refresh Expire Token Failure");
-        accessResponse.setResult(description);
-        return accessResponse;
+        return ResultCode.get(result, "Refresh Expire Token Failed", accessResponse);
     }
 
     @PostMapping("/refreshRefreshToken")
-    public AccessResponse refreshRefreshToken(@RequestBody CryptoToken refreshToken) {
+    public Response<AccessResponse> refreshRefreshToken(@RequestBody CryptoToken refreshToken) {
         logger.info("----------refreshRefreshToken request access-------------");
+
         AccessResponse accessResponse = new AccessResponse();
         int result = authService.refreshRefreshToken(refreshToken, accessResponse);
-        if (result == BaseResponse.COMMON_SUCCESS) {
-            return accessResponse;
-        }
-
-        String description = ResultCode.errorCode.getOrDefault(result, "Refresh Refresh Token Failure");
-        accessResponse.setResult(description);
-        return accessResponse;
+        return ResultCode.get(result, "Refresh Refresh Token Failed", accessResponse);
     }
 
     @PostMapping("/login")
-    public AccessResponse login(@RequestBody CryptoToken cryptoToken) {
+    public Response<AccessResponse> login(@RequestBody CryptoToken cryptoToken) {
         logger.info("----------login request access-------------");
+
         AccessResponse accessResponse = new AccessResponse();
         int result = authService.login(cryptoToken, accessResponse);
-        if (result == BaseResponse.COMMON_SUCCESS) {
-            return accessResponse;
-        }
-
-        accessResponse.setResultCode(result);
-        String description = ResultCode.errorCode.getOrDefault(result, "Login Failure");
-        accessResponse.setResult(description);
-        return accessResponse;
+        return ResultCode.get(result, "Login Failed", accessResponse);
     }
 
     @GetMapping("/checkUIDExisted/{uid:.*}")
     public BaseResponse checkUIDExisted(@PathVariable String uid) {
         logger.info("----------checkUIDExisted request access-------------");
-        BaseResponse response = new BaseResponse();
-        if (authService.isExistUser(uid)) {
-            response.setResultCode(ResultCode.UID_EXISTED);
-            response.setResult(ResultCode.errorCode.get(ResultCode.UID_EXISTED));
-        }
-        return response;
+
+        int result = authService.isExistUser(uid) ? ResultCode.UID_EXISTED : BaseResponse.COMMON_SUCCESS;
+        return ResultCode.get(result, "Uid has existed", null);
     }
 }

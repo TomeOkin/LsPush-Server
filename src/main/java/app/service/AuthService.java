@@ -15,6 +15,7 @@
  */
 package app.service;
 
+import app.config.ResultCode;
 import app.data.crypt.Crypto;
 import app.data.local.UserRepository;
 import app.data.model.*;
@@ -31,8 +32,6 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-
-import static app.config.ResultCode.*;
 
 @Service
 public class AuthService {
@@ -80,7 +79,7 @@ public class AuthService {
             registerData = mObjectMapper.readValue(json, RegisterData.class);
         } catch (Exception e) {
             logger.warn("decrypt register crypt-token failure", e);
-            return INVALID_TOKEN;
+            return ResultCode.INVALID_TOKEN;
         }
 
         // 如果用户验证码验证通过，而 uid 或者密码没有验证通过，验证码就会失效，为了避免这个问题
@@ -95,12 +94,12 @@ public class AuthService {
         boolean check = mUserInfoValidator.checkUserId(registerData.getUserId());
         check = check && mUserInfoValidator.checkPasswordStrengthBaseline(registerData.getPassword());
         if (!check) {
-            return ILLEGAL_ACCOUNT_INFO;
+            return ResultCode.ILLEGAL_ACCOUNT_INFO;
         }
 
         // add user to db
         if (isExistUser(registerData.getUserId())) {
-            return UID_EXISTED;
+            return ResultCode.UID_EXISTED;
         }
 
         User user = new User();
@@ -120,7 +119,7 @@ public class AuthService {
             mUserRepo.save(user);
         } catch (Exception e) {
             logger.warn("update user info failure", e);
-            return UPDATE_USER_INFO_FAILURE;
+            return ResultCode.UPDATE_USER_INFO_FAILED;
         }
 
         // 在服务器端已经将数据记录到数据库后，不关心结果地清除验证码记录
@@ -140,13 +139,13 @@ public class AuthService {
             loginData = mObjectMapper.readValue(json, LoginData.class);
         } catch (Exception e) {
             logger.warn("decrypt register crypt-token failure", e);
-            return INVALID_TOKEN;
+            return ResultCode.INVALID_TOKEN;
         }
 
         boolean check = mUserInfoValidator.checkUserId(loginData.getUid())
             && mUserInfoValidator.checkPasswordStrengthBaseline(loginData.getPassword());
         if (!check) {
-            return ILLEGAL_ACCOUNT_INFO;
+            return ResultCode.ILLEGAL_ACCOUNT_INFO;
         }
 
         User user;
@@ -155,12 +154,12 @@ public class AuthService {
             check = user != null && loginData.getUid().equals(user.getUid()) && loginData.getPassword()
                 .equals(user.getPassword());
             if (!check) {
-                return ACCOUNT_NOT_MATCH;
+                return ResultCode.ACCOUNT_NOT_MATCH;
             }
             accessResponse.setUser(user.cloneSelfPublic());
         } catch (Exception e) {
             logger.warn("query user failure", e);
-            return QUERY_USER_FAILURE;
+            return ResultCode.QUERY_USER_FAILED;
         }
 
         // 检查通过，创建用户口令并返回
@@ -170,7 +169,7 @@ public class AuthService {
     public int checkIfAuth(CryptoToken cryptoToken) {
         AccountSession expireSession = getSessionWithCheck(cryptoToken, true);
         if (expireSession == null) {
-            return INVALID_TOKEN;
+            return ResultCode.INVALID_TOKEN;
         }
 
         DateTime now = DateTime.now();
@@ -179,7 +178,7 @@ public class AuthService {
             return BaseResponse.COMMON_SUCCESS;
         }
 
-        return OVERDUE_TOKEN;
+        return ResultCode.OVERDUE_TOKEN;
     }
 
     public String checkIfAuthBind(CryptoToken cryptoToken) {
@@ -210,14 +209,14 @@ public class AuthService {
     public int refreshExpireToken(CryptoToken cryptoToken, AccessResponse accessResponse) {
         AccountSession refreshSession = getSessionWithCheck(cryptoToken, false);
         if (refreshSession == null) {
-            return INVALID_TOKEN;
+            return ResultCode.INVALID_TOKEN;
         }
 
         // 验证 refreshToken
         DateTime now = DateTime.now();
         DateTime deadline = new DateTime(refreshSession.getRefreshTime());
         if (now.isAfter(deadline)) {
-            return OVERDUE_TOKEN;
+            return ResultCode.OVERDUE_TOKEN;
         }
 
         // 刷新 expireToken
@@ -225,7 +224,7 @@ public class AuthService {
         refreshSession.setExpireTime(expireTime);
         CryptoToken expireToken = newSessionToken(refreshSession, true);
         if (expireToken == null) {
-            return ENCRYPT_TOKEN_FAILURE;
+            return ResultCode.ENCRYPT_TOKEN_FAILED;
         }
 
         accessResponse.setExpireTime(expireTime);
@@ -240,12 +239,12 @@ public class AuthService {
             refreshData = mObjectMapper.readValue(json, RefreshData.class);
         } catch (Exception e) {
             logger.warn("decrypt refresh crypt-token failure", e);
-            return INVALID_TOKEN;
+            return ResultCode.INVALID_TOKEN;
         }
 
         AccountSession old = getSessionWithCheck(refreshData.getRefreshToken(), false);
         if (old == null || !old.getUserId().equals(refreshData.getUserId())) {
-            return INVALID_TOKEN;
+            return ResultCode.INVALID_TOKEN;
         }
 
         return refreshAccessResponse(refreshData.getUserId(), accessResponse);
@@ -263,12 +262,12 @@ public class AuthService {
 
         CryptoToken expireToken = newSessionToken(session, true);
         if (expireToken == null) {
-            return ENCRYPT_TOKEN_FAILURE;
+            return ResultCode.ENCRYPT_TOKEN_FAILED;
         }
 
         CryptoToken refreshToken = newSessionToken(session, false);
         if (refreshToken == null) {
-            return ENCRYPT_TOKEN_FAILURE;
+            return ResultCode.ENCRYPT_TOKEN_FAILED;
         }
 
         accessResponse.setExpireTime(expireTime);

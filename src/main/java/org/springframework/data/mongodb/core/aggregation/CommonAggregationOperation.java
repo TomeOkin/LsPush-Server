@@ -15,17 +15,17 @@
  */
 package org.springframework.data.mongodb.core.aggregation;
 
-import com.mongodb.DBObject;
-
-public class CommonAggregationOperation implements AggregationOperation {
-    private DBObject dbObject;
-
-    public CommonAggregationOperation(DBObject dbObject) {
-        this.dbObject = dbObject;
-    }
-
-    @Override
-    public DBObject toDBObject(AggregationOperationContext context) {
-        return context.getMappedObject(dbObject);
-    }
-}
+//import com.mongodb.DBObject;
+//
+//public class CommonAggregationOperation implements AggregationOperation {
+//    private DBObject dbObject;
+//
+//    public CommonAggregationOperation(DBObject dbObject) {
+//        this.dbObject = dbObject;
+//    }
+//
+//    @Override
+//    public DBObject toDBObject(AggregationOperationContext context) {
+//        return context.getMappedObject(dbObject);
+//    }
+//}

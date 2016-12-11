@@ -16,31 +16,31 @@
 package app.service;
 
 //@Service
-public class HotService {
-    //    //private final RedisTemplate<String, Long> template;
-    //    private static final Logger logger = LoggerFactory.getLogger(HotService.class);
-    //
-    //    @Autowired
-    //    public HotService(RedisTemplate<String, Long> template) {
-    //        this.template = template;
-    //        init();
-    //    }
-    //
-    //    public void init() {
-    //        ValueOperations<String, Long> values = template.opsForValue();
-    //        values.set("col:1", 10L, 10, TimeUnit.SECONDS);
-    //        values.set("col:2", 10L, 10, TimeUnit.SECONDS);
-    //    }
-    //
-    //    //@Scheduled(fixedDelay = 5000)
-    //    public void done() {
-    //        ValueOperations<String, Long> values = template.opsForValue();
-    //        long value = values.get("col:2");
-    //        values.set("col:2", value);
-    //        Set<String> keys = template.keys("col:*");
-    //        logger.info("------------------------------");
-    //        for (String key : keys) {
-    //            logger.info("(key, value) = ({}, {})", key, template.opsForValue().get(key));
-    //        }
-    //    }
-}
+//public class HotService {
+//    //    //private final RedisTemplate<String, Long> template;
+//    //    private static final Logger logger = LoggerFactory.getLogger(HotService.class);
+//    //
+//    //    @Autowired
+//    //    public HotService(RedisTemplate<String, Long> template) {
+//    //        this.template = template;
+//    //        init();
+//    //    }
+//    //
+//    //    public void init() {
+//    //        ValueOperations<String, Long> values = template.opsForValue();
+//    //        values.set("col:1", 10L, 10, TimeUnit.SECONDS);
+//    //        values.set("col:2", 10L, 10, TimeUnit.SECONDS);
+//    //    }
+//    //
+//    //    //@Scheduled(fixedDelay = 5000)
+//    //    public void done() {
+//    //        ValueOperations<String, Long> values = template.opsForValue();
+//    //        long value = values.get("col:2");
+//    //        values.set("col:2", value);
+//    //        Set<String> keys = template.keys("col:*");
+//    //        logger.info("------------------------------");
+//    //        for (String key : keys) {
+//    //            logger.info("(key, value) = ({}, {})", key, template.opsForValue().get(key));
+//    //        }
+//    //    }
+//}

@@ -15,7 +15,7 @@
  */
 package app.data.model;
 
-public class AccessResponse extends BaseResponse {
+public class AccessResponse {
     // 表示截至的访问时间，超过该时间后 expireToken 无效，需要使用 refreshToken 来获取新的 expireToken，否则用户需要重新登录。
     private long expireTime;
     // 超过该刷新时间后，refreshToken 也需要重新获取一个新的，更新 refreshToken 需要以旧换新。
@@ -25,14 +25,6 @@ public class AccessResponse extends BaseResponse {
 
     private CryptoToken expireToken;
     private CryptoToken refreshToken;
-
-    public AccessResponse() {
-        super();
-    }
-
-    public AccessResponse(int errorCode, String result) {
-        super(errorCode, result);
-    }
 
     public long getExpireTime() {
         return expireTime;

@@ -15,23 +15,30 @@
  */
 package app.data.model;
 
-public class CollectionBindingResponse extends BaseResponse {
-    private CollectionBinding colBinding;
+public class Response<T> extends BaseResponse {
+    private T data;
 
-    public CollectionBindingResponse(CollectionBinding favor) {
-        this.colBinding = favor;
+    public Response(T data) {
+        this.data = data;
     }
 
-    public CollectionBindingResponse(int resultCode, String result, CollectionBinding favor) {
+    public Response(int resultCode, String result) {
         super(resultCode, result);
-        this.colBinding = favor;
+        this.data = null;
     }
 
-    public CollectionBinding getCollectionBinding() {
-        return colBinding;
+    public T getData() {
+        return data;
     }
 
-    public void setCollectionBinding(CollectionBinding favor) {
-        this.colBinding = favor;
+    public void setData(T data) {
+        this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        return "Response{" +
+            "data=" + data +
+            '}';
     }
 }

@@ -71,7 +71,7 @@ public class PinService {
             pinDatas.addAll(list);
         } catch (IOException e) {
             logger.info("parse list-pinData failure", e);
-            return ResultCode.PARSE_PIN_DATA_FAILURE;
+            return ResultCode.PARSE_PIN_DATA_FAILED;
         }
 
         return BaseResponse.COMMON_SUCCESS;
@@ -129,7 +129,7 @@ public class PinService {
             mPinRepo.save(pin);
         } catch (JsonProcessingException e) {
             logger.info("parse list-pinData -> string failure", e);
-            return ResultCode.PARSE_PIN_DATA_FAILURE;
+            return ResultCode.PARSE_PIN_DATA_FAILED;
         }
 
         return BaseResponse.COMMON_SUCCESS;

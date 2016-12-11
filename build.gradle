@@ -34,7 +34,7 @@ jar {
     // ${baseName}-${appendix}-${version}-${classifier}.${extension}
     baseName = 'lspush-server'
     appendix = "${releaseTime()}"
-    version =  "${versionMajor}.${versionMinor}.${versionPatch}"
+    version = "${versionMajor}.${versionMinor}.${versionPatch}"
 }
 
 repositories {
@@ -45,19 +45,37 @@ repositories {
     }
 }
 
+ext {
+    def springBoot = "org.springframework.boot"
+
+    lib = [
+            springWeb : "${springBoot}:spring-boot-starter-web",
+            springJpa : "${springBoot}:spring-boot-starter-data-jpa",
+            springMail: "${springBoot}:spring-boot-starter-mail",
+            springThymeleaf: "${springBoot}:spring-boot-starter-thymeleaf",
+            springMongodb : "${springBoot}:spring-boot-starter-data-mongodb",
+
+            mysql     : "mysql:mysql-connector-java:5.1.40",
+            hibernate : "org.hibernate:hibernate-core:5.2.5.Final"
+    ]
+}
+
+configurations {
+    compile.exclude group: 'org.hibernate', module: 'hibernate-entitymanager'
+}
+
 dependencies {
-    compile "org.springframework.boot:spring-boot-starter-web"
+    def lib = rootProject.ext.lib
 
-    // jpa
-    compile ("org.springframework.boot:spring-boot-starter-data-jpa") {
-        exclude group: 'org.hibernate', module:'hibernate-entitymanager'
-        exclude group: 'org.hibernate', module:'hibernate-core'
-    }
-    compile "org.hibernate:hibernate-core:5.2.5.Final"
-    compile "mysql:mysql-connector-java:5.1.40"
+    compile lib.springWeb
+    compile(lib.springJpa, {
+        exclude group: 'org.hibernate', module: 'hibernate-core'
+    })
+    compile(lib.mysql, lib.hibernate)
+    compile lib.springMongodb
 
-    compile "org.springframework.boot:spring-boot-starter-mail"
-    compile "com.googlecode.libphonenumber:libphonenumber:7.7.5"
+    compile lib.springMail
+    compile "com.googlecode.libphonenumber:libphonenumber:8.0.0"
     compile "commons-validator:commons-validator:1.5.1"
     compile "com.google.guava:guava:20.0"
     compile "org.apache.commons:commons-lang3:3.5"
@@ -65,28 +83,25 @@ dependencies {
     compile "org.jsoup:jsoup:1.10.1"
 
     // thymeleaf 3
-    compile ("org.springframework.boot:spring-boot-starter-thymeleaf") {
-        exclude group: 'org.thymeleaf', module:'thymeleaf-spring4'
-        exclude group: 'nz.net.ultraq.thymeleaf', module:'thymeleaf-layout-dialect'
+    compile(lib.springThymeleaf) {
+        exclude group: 'org.thymeleaf', module: 'thymeleaf-spring4'
+        exclude group: 'nz.net.ultraq.thymeleaf', module: 'thymeleaf-layout-dialect'
     }
     compile "org.thymeleaf:thymeleaf-spring4:3.0.2.RELEASE"
     compile "org.thymeleaf:thymeleaf:3.0.2.RELEASE"
-    compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.1.1"
+    compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.1.2"
 
     // redis
-    compile ("org.springframework.boot:spring-boot-starter-data-redis") {
-        exclude group: 'redis.clients', module:'jedis'
-    }
-    compile "redis.clients:jedis:2.9.0"
+    //    compile ("org.springframework.boot:spring-boot-starter-data-redis") {
+    //        exclude group: 'redis.clients', module:'jedis'
+    //    }
+    //    compile "redis.clients:jedis:2.9.0"
 
-    // mongodb
-    compile "org.springframework.boot:spring-boot-starter-data-mongodb"
-
-    // jms
-    compile ("org.springframework.boot:spring-boot-starter-activemq") {
-        exclude group: 'org.apache.activemq', module:'activemq-broker'
-    }
-    compile "org.apache.activemq:activemq-broker:5.14.1"
+    //    // jms
+    //    compile("org.springframework.boot:spring-boot-starter-activemq") {
+    //        exclude group: 'org.apache.activemq', module: 'activemq-broker'
+    //    }
+    //    compile "org.apache.activemq:activemq-broker:5.14.2"
 
     // annotations support
     compile "com.google.code.findbugs:jsr305:3.0.1"
@@ -94,16 +109,16 @@ dependencies {
     // cache
     //compile "org.springframework.boot:spring-boot-starter-cache"
 
-//    // JSR-107 API (uncomment to try the JCache support)
-//    compile "javax.cache:cache-api:1.0.0"
-//    // Using cache manager: org.springframework.cache.jcache.JCacheCacheManager
-//    // need to set spring.cache.jcache.config=ehcache3.xml and add compile "javax.cache:cache-api:1.0.0"
-//    compile "org.ehcache:ehcache:3.1.1"
+    //    // JSR-107 API (uncomment to try the JCache support)
+    //    compile "javax.cache:cache-api:1.0.0"
+    //    // Using cache manager: org.springframework.cache.jcache.JCacheCacheManager
+    //    // need to set spring.cache.jcache.config=ehcache3.xml and add compile "javax.cache:cache-api:1.0.0"
+    //    compile "org.ehcache:ehcache:3.1.1"
 
     // used to expose cache metrics
     //compile "org.springframework.boot:spring-boot-starter-actuator"
 
     testCompile "junit:junit:4.12"
     testCompile "org.springframework.boot:spring-boot-starter-test"
-    testCompile "org.apache.commons:commons-crypto:1.0.0"
+    //    testCompile "org.apache.commons:commons-crypto:1.0.0"
 }

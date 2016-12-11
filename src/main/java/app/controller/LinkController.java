@@ -17,7 +17,7 @@ package app.controller;
 
 import app.config.ResultCode;
 import app.data.model.Collection;
-import app.data.model.UrlCollectionResponse;
+import app.data.model.Response;
 import app.service.AuthService;
 import app.service.FetchService;
 import org.apache.commons.lang3.StringUtils;
@@ -37,20 +37,24 @@ public class LinkController {
     }
 
     @GetMapping("/fetch")
-    public UrlCollectionResponse fetchUrInfo(@RequestHeader(value = "token") String token,
+    public Response<Collection> fetchUrInfo(@RequestHeader(value = "token") String token,
         @RequestParam(value = "url") String url) {
         String uid = mAuthService.checkIfAuthBind(token);
         if (StringUtils.isEmpty(uid)) {
-            return new UrlCollectionResponse(ResultCode.USER_AUTH_FAILURE,
-                ResultCode.errorCode.get(ResultCode.USER_AUTH_FAILURE), null);
+            return ResultCode.error(ResultCode.USER_AUTH_FAILED);
         }
 
-        Collection col = StringUtils.isEmpty(url) ? null : mFetchService.getUrlInfo(uid, url);
-        if (col != null) {
-            return new UrlCollectionResponse(col);
+        int resultCode;
+        if (StringUtils.isEmpty(url)) {
+            resultCode = ResultCode.ARGUMENT_ERROR;
+        } else {
+            Collection col = mFetchService.getUrlInfo(uid, url);
+            if (col == null) {
+                resultCode = ResultCode.FETCH_URL_DATA_FAILED;
+            } else {
+                return new Response<>(col);
+            }
         }
-
-        return new UrlCollectionResponse(ResultCode.ARGUMENT_ERROR, ResultCode.errorCode.get(ResultCode.ARGUMENT_ERROR),
-            null);
+        return ResultCode.error(resultCode);
     }
 }

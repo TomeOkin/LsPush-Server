@@ -70,7 +70,7 @@ public class ResourceService {
             resource.filename = filename;
         } catch (Exception e) {
             logger.warn("upload file failure", e);
-            return ResultCode.UPLOAD_FILE_FAILURE;
+            return ResultCode.UPLOAD_FILE_FAILED;
         }
         return BaseResponse.COMMON_SUCCESS;
     }

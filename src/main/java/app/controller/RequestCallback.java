@@ -13,26 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.data.model;
+package app.controller;
 
-public class UploadResponse extends BaseResponse {
-    private String filename;
+public interface RequestCallback<T> {
+    void onRequestSuccess(T data);
 
-    public UploadResponse(String filename) {
-        super();
-        this.filename = filename;
-    }
-
-    public UploadResponse(int resultCode, String result, String filename) {
-        super(resultCode, result);
-        this.filename = filename;
-    }
-
-    public String getFilename() {
-        return filename;
-    }
-
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
+    void onRequestError(int errorCode);
 }
